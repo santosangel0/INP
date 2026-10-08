@@ -1,0 +1,1446 @@
+=== PAGE 1 ===
+2 Testes para uma amostra
+2.1 Teste Binomial
+Seja X uma v.a. dicotômica {sucesso, fracasso }. Assim, escrevemos X∼
+Bernoulli(p) e
+X =
+ 1, se sucesso , com probabilidade p,
+0, se fracasso , com probabilidade 1−p.
+Seja X1, X2,··· , Xn. Sabemos que bp =X = 1
+n
+Pn
+i=1Xi é um bom es-
+timador para o parâmetro (desconhecido) p. Considere os seguintes possíveis
+testes de hipótese para p:
+H0 :p =p0 × H1 :
+
+
+
+p̸=p0
+p>p 0
+p<p 0
+,
+onde p0 é um valor especíco, 0<p 0 < 1.
+Pela propriedade dos estimadores de máxima verossimilhança (EMV),
+temos que bp
+a
+∼ N(p,p (1−p)/n), para n grande. Usualmente usamos esta
+propriedade para confeccionar testes de hipóteses para a proporção p por
+aproximação da Binomial para a Normal. Por outro lado, temos que
+S =
+nX
+i=1
+Xi∼ Binomial(n,p ).
+Assim, temos que P (S =k) =
+ n
+k
+
+pk(1−p)n−k, para k = 0, 1,...,n ,
+e P (S≤k) =Pk
+i=1P (S =i), P (S≥k) =Pn
+i=kP (S =i). Assim, podemos
+construir testes de hipóteses exatos usando S como nossa estatística de teste.
+a. Para testar H1 :p>p 0, rejeite H0 a um nível de signicância α se S≥
+bα, onde bα (valor crítico) é escolhido para fazer a probabilidade do erro
+tipo I igual a α, calculado da distribuição da estatística de teste sob H0
+( S0). Porém, como a Binomial é uma v.a. discreta, não temos bα para
+qualquer 0 < α <1. Por exemplo, para n = 8 e p0 = 0.4, temos que
+α =P (S0≥ 7) = 0.0085; bα = 7 e α =P (S0≥ 6) = 0.0498; bα = 6.
+9
+
+=== PAGE 2 ===
+b. Para testar H1 : p < p0, rejeite H0 a um nível de signicância α se
+S≤ bα. Por exemplo, para n = 8 e p0 = 0.4, temos que α = P (S0≤
+0) = 0.0168; bα = 0 e α =P (S0≤ 1) = 0.1064; bα = 1.
+c. Para testar H1 : p̸= p0, rejeite H0 a um nível de signicância α se
+S≥ bα1 ou S≤ cα2, tal que α = α1 +α2. Por exemplo, para n = 8
+e p0 = 0.4, se escolhemos α1 = 0.0498 e α2 = 0.1064, então α =
+0.0498 + 0.1064 = 0 .1562 e rejeite H0 se S ≤ 1 ou S ≥ 6. Mais
+detalhes, ver Hollander and Wolfe (2014), pág. 11.
+Para grandes amostras, podemos substituir com sucesso o teste exato da
+Binomial usando a distribuição assintótica de X para a distribuição normal.
+Esta abordagem não será discutida aqui, pois é pressuposto ter sido vista em
+cursos anteriores de Inferência Estatística Paramétrica . Para maiores deta-
+lhes, ver Bussab and Morettin (2010), pág. 341; Conover (1999), pág. 124.
+No R: binom.test{stats}
+2.2 Estatísticas de Ordem e Função Distribuição
+2.2.1 Função Quantil
+Considere um experimento onde xamos um cabo de aço de comprimento a
+em uma parede e exercemos um força em sua outra extremidade até que o
+cabo se rompa.
+Questões de interesse:
+→ Interesse na resistência à ruptura de um cabo (por ex.).
+→ Força mediana para arrebentar o cabo.
+→ Que porcentagem dos itens sobrevivem a uma pressão de 3 libras?
+→ Qual é a força que é sobrevivida por 60% dos itens?
+Denição 6. O quantil de uma função distribuição acumulada (fda) de uma
+variável aleatória X contínua é um número real que divide a área sob a curva
+da fda em duas partes. Ou seja, o p-ésimo quantil da fda FX de X é o valor
+de X, digamos Xp, tal que 100p% dos valores de X na população são menores
+ou iguais a Xp, 0<p< 1.
+Observações:
+10
+
+=== PAGE 3 ===
+ Xp é tal que FX(Xp) =P (X≤Xp) =p.
+ Xp
+d
+=
+RXp
+−∞fX(x)dx =p.
+ Se FX é estritamente crescente, Xp =F−1
+X =QX(p) é solução única.
+Nós chamamos QX(p), 0 < p < 1, como a função quantil da variável
+aleatória X.
+Exemplo 2.1. X∼Exponencial(λ).
+Neste caso, temos que
+fX(x) =λe−λx,x≥ 0,λ> 0.
+FX(x) =
+Rx
+−∞λe−λzdz = λe−λz
+−λ |x
+z=0 = −e−λz|x
+z=0 = −(e−λx− e−0) =
+1−e−λx,x≥ 0.
+• Análise se é estritamente crescente
+Primeira forma: F′
+X =fX(x) =λe−λx > 0,∀x.
+Segunda forma: Suponha x1 <x 2. Então
+x1 <x 2 ⇐⇒ λx1 <λx 2 (λ> 0)
+⇐⇒ −λx1 >−λx2
+⇐⇒ e−λx1 >e−λx2 (Exponencial é crescente )
+⇐⇒ −e−λx1 <−e−λx2
+⇐⇒ FX(x1) = 1−e−λx1 < 1−e−λx2 =FX(x2).
+• Cálculo de QX(p):
+Iguala FX(Xp) =p e encontra Xp.
+FX = 1−e−λXp =p
+1−p =e−λXp
+11
+
+=== PAGE 4 ===
+ln(1−p) =−λXp
+∴Xp =− 1
+λln(1−p).
+•SX = [0, +∞) (suporte da v.a. X)
+•Xp deve pertencer a SX
+•QX(p) = −1
+λ ln(1−p), 0<p< 1.
+Xp∈SX? Como vericar.
+0<p< 1
+⇐⇒ −1<−p< 0
+⇐⇒ 0< 1−p< 1
+⇐⇒ ln(1−p)< 0
+⇐⇒ 1
+λln(1−p)< 0
+⇐⇒ Xp =− 1
+λln(1−p)> 0.
+Logo, Xp pertence ao suporte de X.
+Denição 7. (Denição Geral de Quantil): QX(p) é o menor valor de X
+tal que FX é maior ou igual a p. Isto é,
+QX(p) =F−
+X (p) = inf x{FX(x)≥p}.
+Teorema 1. Se X é uma v.a. contínua com função quantil QX, temos que
+E(X) =
+Z 1
+0
+QX(p)dp e E(X2) =
+Z 1
+0
+Q2
+X(p)dp.
+Teorema 2. (Teorema da Probabilidade Total - PIT) Seja X uma v.a. com
+fda FX. Se FX é contínua, então
+Y =FX(X)∼U(0, 1).
+12
+
+=== PAGE 5 ===
+Figura 1: Grácos da fdp, fda e função quantil de X∼ Normal (0, 1) (es-
+querda para a direita).
+Figura 2: Grácos da fdp, fda e função quantil de X∼Exp(0.5) (esquerda
+para a direita).
+Prova: Ver Gibbons and Chakraborti (2003), pág. 42.
+Exemplo 2.2. Fazer para X∼U(0, 1) e X∼Exp(λ).
+Aplicação do PIT: O resultado é útil para geração de amostras aleatórias
+de uma v.a. contínua, usando o gerador de v.a. de uma U(0, 1).
+Algoritmo:
+Dada uma v.a. X contínua.
+i. Calcule a fda de X, FX(.).
+ii. Calcule o quantil Xp =F−1
+X (p).
+iii. Gere uma a.a. U1,..., Un de U∼U(0, 1).
+13
+
+=== PAGE 6 ===
+iv Calcule Xi =F−1
+X (Ui), para i = 1,...,n .
+v. Portanto, X1,..., Xn é uma a.a. de X.
+Exemplo 2.3. Mostrar para X∼Exp(λ).
+2.2.2 Estatísticas de Ordem da Amostra
+Objetivo: Testar se um determinado conjunto de dados segue uma determi-
+nada distribuição.
+Denição 8. Dada uma amostra aleatória (aa) X1, X2, ··· , Xn de uma
+população com função densidade de probabilidade (fdp) de uma variável ale-
+atória (v.a.) X contínua, então existe um único arranjo ordenado X(1) <
+X(2) <··· < X(n) onde X(i) denota o i-ésimo menor elemento da amostra.
+Denimos então X(r) como a r-ésima estatística de ordem da amostra.
+Outras notações: X
+e
+= (X1, X2,··· , Xn) (Amostra) e
+
+X(i)
+	n
+i=1 (Esta-
+tísticas de Ordem da amostra X
+e
+).
+Exemplo 2.4.
+i. X(n): Máximo amostral.
+ii. X(1): Mínimo amostral.
+iii. R =X(n)−X(1): Amplitude amostral (medida de escala)
+iv. eX: Mediana amostral (medida de tendência central), dada por
+eX =
+
+
+
+X(n+1
+2 ), se n é ímpar ;
+X(n/2)+X(n/2+1)
+2 , se n é par .
+v. S =
+X(1)+X(n)
+2 : Semi-amplitude amostral (medida de tendência central)
+vi. Quartis, Decis, Percentis, ...
+14
+
+=== PAGE 7 ===
+Denição 9. Para uma a.a de X com fda FX, a função distribuição empírica
+(fde), denotada por Fn(x), é a proporção de valores amostrais menores ou
+iguais ao valor especicado x, para todo x∈ R. Isto é,
+Fn(x) = número de valores amostrais ≤x
+n .
+Formalmente, temos que
+Fn(x) = 1
+n
+nX
+i=1
+1 (−∞,x](Xi),
+onde 1 A(x) é a função indicadora, dada por
+1 A(t) =
+ 1, se t∈A,
+0, caso contrário .
+Outra forma equivalente da função indicadora é da forma 1 (−∞,x](Xi) =
+1 (Xi≤x).
+A função Fn(x) é popularmente chamada de função escada e seu gráco
+de gráco de escada. Outra forma de escrever Fn(x) é
+Fn(x) =
+
+
+
+0, se x<X (1),
+1/n, se X(1)≤x<X (2),
+2/n, se X(2)≤x<X (3),
+... ...
+k/n, se X(k)≤x<X (k+1),
+... ...
+(n− 1)/n, se X(n−1)≤x<X (n),
+1, se x≥X(n).
+Propriedades
+ Fn(x) é uma variável aleatória.
+ Fn(x) é um estimador de FX(x), isto é, Fn(x) = \FX(x).
+ Fn(x) é um estimador não-viesado de FX(x) e Var (Fn(x)) →
+n→∞
+0.
+ Tn(x) =Pn
+i=1 1 (−∞,x](Xi)∼Binomial(n,FX(x)).
+15
+
+=== PAGE 8 ===
+ (Teorema de Glivenko-Cantelli) Para qualquer x xado, Fn(x) é um
+estimador consistente de FX(x). Ou seja,
+Fn(x)
+q.c.
+→
+n→∞
+FX(x).
+A prova do Teorema de Glivenko-Cantelli pode ser encontrada em
+https://www.stat.purdue.edu/ jianzhan/STAT598Y/NOTES/slt07.pdf. As
+Figuras 3-4 apresentam empiricamente a convergência de Fn para a verda-
+deira função distribuição acumulada para a distribuição Normal e Exponen-
+cial.
+(a) (b) (c)
+Figura 3: Grácos das funções distribuição empírica ( Fn) e teórica (fda) de
+X∼Normal (0, 1): (a) n = 20, (b) n = 100, (c) n = 1000.
+(a) (b) (c)
+Figura 4: Grácos das funções distribuição empírica ( Fn) e teórica (fda) de
+X∼Exp(5): (a) n = 20, (b) n = 100, (c) n = 1000.
+16
+
+=== PAGE 9 ===
+Denição 10. Para uma a.a de X com fda FX, a função quantil empírica,
+denotada por Qn(u), é dada por
+Qn(u) =
+
+
+
+X(1), se 0<u ≤ 1/n,
+X(2), se 1/n<u ≤ 2/n,
+X(3), se 2/n<u ≤ 3/n,
+... ...
+X(k), se (k− 1)/n<u ≤k/n,
+... ...
+X(n−1), se (n− 2)/n<u ≤ (n− 1)/n,
+X(n), se (n− 1)/n<u ≤ 1.
+Lista de exercícios 2.1. Gere amostras das distribuições abaixo. Para cada
+amostra, construa 3 grácos: o histograma de densidade mais a função den-
+sidade de probabilidade (caso contínuo), função distribuição (empírica e teó-
+rica) e função quantil (empírica e teórica). Para as variáveis discretas, fazer
+apenas gráco de barras das frequências relativas ou histograma de densidade
+(mais a função de probabilidade) e função distribuição (empírica e teórica).
+a. X∼N(5, 2), n=50.
+b. X∼N(5, 2), n=200.
+c. X∼N(100, 1), n=50.
+d. X∼exp(5), n=50.
+e. X∼exp(1/5), n=50.
+f. X∼exp(5), n=200.
+g. X∼Poisson (5), n=50.
+h. X∼Poisson (5), n=100.
+OBS.: Entregar comandos e grácos gerados. Usar R Markdown.
+17
+
+=== PAGE 10 ===
+2.2.3 Distribuições de Estatísticas de Ordem
+Teorema 3. Seja X1, X2, ..., Xn uma amostra aleatória de uma v.a. X com
+fdp (ou f.p.) fX e seja X
+e
+0 = (X(1),X (2),...,X (n)) o vetor das n estatísticas
+de ordem. A distribuição de X
+e
+0 é dada por
+fX
+e
+0(y1,...,y n) =n!
+nY
+i=1
+fX(yi), para y1 <y 2 <··· <y n.
+Exemplo 2.5. Se X∼N(µ,σ 2), temos que
+fX
+e
+0(y1,...,y n) = n!
+(2πσ2)n/2e− 1
+2σ2
+Pn
+i=1(yi−µ)2
+, para y1 <y 2 <··· <y n.
+Teorema 4. Seja X1, X2, ..., Xn uma amostra aleatória de uma v.a. con-
+tínua X. Para qualquer t xo, a função distribuição acumulada da r-ésima
+estatística de ordem é dada por
+FX(r)(t) = P (X(r)≤t) (2)
+=
+nX
+i=r
+ n
+i
+
+FX(t)i [1−FX(t)]n−i.
+Demonstração. Temos que X(r)≤t ⇐⇒ pelo menos r valores Xi são iguais ou menores que t
+⇐⇒ Tn(t) =Pn
+i=1 1 (Xi≤t)≥r.
+Portanto, P (X(r)≤t) =P (Tn(t)≥r), o que conclui a prova.
+Teorema 5. Seja X1, X2, ..., Xn uma amostra aleatória de uma v.a. contí-
+nua X com fdp fX e fda FX. A função densidade de probabilidade da r-ésima
+estatística de ordem é dada por
+fX(r)(x) = n!
+(r− 1)!(n−r)!FX(x)r−1 [1−FX(x)]n−rfX(x). (3)
+Exemplo 2.6. Fazer para X(1) e X(n).
+Corolário 1. Para uma a.a. de tamanho n de X ∼ U(0, 1), temos que
+X(r)∼Beta(r,n−r + 1).
+18
+
+=== PAGE 11 ===
+Observação : Se X∼Beta(α,β ), então fX(x) = 1
+β(α,β)xα−1(1−x)β−1, 0<
+x< 1;α> 0,β > 0, onde β(α,β ) =
+R 1
+0 xα−1(1−x)β−1dx é a função beta.
+Distribuição conjunta de duas estatísticas de ordem
+ 
+X(r),X (s)
+
+, 1≤
+r <s≤n (supomos r <s sem perda de generalidade).
+Teorema 6. Seja X1, X2, ..., Xn uma amostra aleatória de uma v.a. contí-
+nua X com fdp fX e fda FX. A função densidade de probabilidade conjunta
+das estatísticas de ordem (r,s ) é dada por
+fX(r),X(s)(x,y ) = (4)
+=CrsFX(x)r−1 [FX(y)−FX(x)]s−r−1 [1−FX(y)]n−sfX(x)fX(y), para x<y.
+onde Crs = n!
+(r−1)!(s−r−1)!(n−s)! .
+Prova: Gibbons and Chakraborti (2003), pág. 48.
+Exemplo: Distribuição conjunta de
+ 
+X(1),X (n)
+
+:
+fX(1),X(n)(x,y ) =n(n− 1) [FX(y)−FX(x)]n−2fX(x)fX(y), para x<y.
+Exemplo 2.7. Distribuição da mediana amostral.
+Pra n ímpar, basta tomar r = (n + 1)/2 e usar a expressão em (3). Para
+n par, temos que eX =
+X(n/2)+X(n/2+1)
+2 . Considere V = X(n/2+1). Assim, use
+a expressão em (4) e o método do Jacobiano para calcular a distribuição do
+vetor (eX,V ), integre em V para obter a marginal de eX. Assim, considerando
+m =n/2, temos que
+f eX(u) = (2m)!2
+[(m− 1)!]2
+Z +∞
+u
+FX(2u−v)m−1 [1−FX(v)]m−1fX(2u−v)fX(v)dv
+Para maiores detalhes, ver Gibbons and Chakraborti (2003), pág. 50.
+Exemplo 2.8. Distribuição da amplitude amostral R = X(n)−X(1). Con-
+sidere V = X(n), use a expressão em (4) e o método do Jacobiano para
+calcular a distribuição do vetor (R,V ), integre em V para obter a marginal
+de R. Obtemos que
+fR(r) =n(n− 1)
+Z S
+r
+[FX(v)−FX(v−r)]n−2fX(v−r)fX(v)dv, r > 0,
+19
+
+=== PAGE 12 ===
+onde S é o limite superior do suporte de X. Para maiores detalhes, ver
+Gibbons and Chakraborti (2003), pág. 52.
+Lista de exercícios 2.2. Gibbons and Chakraborti (2003), Cap. 2: 6, 14,
+24 e 25.
+2.3 Testes de hipóteses de bondade de ajuste
+Objetivo: Testar se uma particular amostra vem de uma determinada dis-
+tribuição especicada. Por exemplo, para uma variável categórica, existe
+diferença signicativa entre as frequências observada e esperada? É razoável
+acreditar que a amostra tenha sido extraída de uma população com uma de-
+terminada distribuição (Normal, Exponencial, Uniforme, etc.)?
+2.3.1 Teste de Qui-Quadrado para variáveis aleatórias categóricas
+ou discretas
+Objetivo: Testar se as diferenças entre valores observados e esperados em
+cada célula de uma tabela de contingência são signicantes.
+Aqui supomos que tenhamos uma variável Y com m categorias, m nito.
+Poderia ser uma variável categórica (nominal) como sexo, raça, estado
+civil, onde devemos pensar em uma distribuição Multinomial com m ca-
+tegorias. Ou poderia ser uma variável aleatória discreta, como número de
+tentativas até obter um sucesso, resultado do lançamento de um dado ou
+número de acidentes por dia em determinada cidade.
+Seja pi =P (Y =ai), i = 1,...,m , sendo que Pm
+i=1pi = 1. Considerando
+uma a.a. Y1,··· ,Yn de uma v.a. Y , temos que o valor esperado do número
+de observações na categoria i é dado por Ei =npi, i= 1,...,m . Obviamente,Pm
+i=1Ei =Pm
+i=1npi =nPm
+i=1pi =n.
+Por outro lado, seja Oi, i = 1,··· m, a frequência observada da i-ésima
+categoria de Y ( ai), com Pm
+i=1Oi = n. A Tabela 2 apresenta os dados das
+frequências observadas e esperadas das m categorias da variável Y relativas
+à amostra aleatória de tamanho n.
+O teste de hipóteses considerado é:
+H0 : Os dados seguem a distribuição de probabilidade de Y ;
+H1 : Os dados não seguem a distribuição de probabilidade de Y ;
+20
+
+=== PAGE 13 ===
+Tabela 2: Tabela de frequências observadas e esperadas.
+Categoria/classe 1 2 ··· m Total
+Observado O1 O2 ··· Om n
+Esperado E1 E2 ··· Em n
+A estatística de teste, denominada Estatística de Qui-Quadrado de Pear-
+son , é dada por
+X2 =
+mX
+i=1
+(Ei−Oi)2
+Ei
+.
+Para n grande, temos que X2 a
+∼ χ2
+(g), com g = m− 1, onde
+a
+∼ signica
+aproximadamente. O p-valor é dado por p−valor =P (χ2
+(g)≥x2), onde x2
+é o valor observado da estatística X2 ( Figura 5).
+Uma desvantagem do teste Qui-quadrado é que ele somente pode ser
+usado para grandes amostras. Por outro lado, pode ser usado em variáveis
+categóricas.
+Figura 5: Representação do p-valor para o teste Qui-quadrado.
+Exemplo 2.9. (Siegel and Castellan, Jr. (2006), pág. 66). O exemplo trata
+de resultados de corridas de cavalos em um hipódromo com 8 posições de
+largada. Foram ao todo 144 corridas, distribuídas conforme a Tabela 3.
+Seja Yi raia vencedora da i-ésima corrida, i = 1,..., 144. Considere as
+hipóteses:
+21
+
+=== PAGE 14 ===
+H0 : Não existe relação entre posição de largada e número de vitórias
+H1 : Existe relação entre posição de largada e número de vitórias
+De forma mais formal,
+H0 :pi = 1/8, i= 1,..., 8.
+H1 :pi̸= 1/8, para pelo menos um i̸=j.
+A estatística de teste foi de x2 = 16.3. Assim, o p-valor é P (χ2
+(7) ≥
+16.3) = 0.022. Portanto, rejeitamos a hipótese nula, a um nível de signi-
+cância de α = 5%. Portanto, o número de vitórias tem relação com a posição
+de largada.
+Tabela 3: Vitórias obtidas em uma pista circular para cavalos em 8 posições.
+Categoria/classe 1 2 3 4 5 6 7 8 Total
+Observado 29 19 18 25 17 10 15 11 144
+Esperado 18 18 18 18 18 18 18 18 144
+Restrições ao uso do teste qui-quadrado:
+ Quando os graus de liberdade (g.l) forem iguais a 1 (m=2 classes), cada
+frequência esperada deve ser pelo menos 5.
+ Quando g.l. > 1, o teste não deve ser aplicado se mais que 20% das
+células (categorias) possuem frequências esperadas menores que 5 ou
+se qualquer frequência esperada é menor que 1. Alternativa: agrupar
+categorias adjacentes ou similares.
+Bondade de ajuste com estimação de parâmetros
+Exemplo 2.10. (Sprent and Smeeton (2007), pág. 376) Uma fábrica possui
+220 empregados. A Tabela 4 apresenta a frequência do número de acidentes
+sofridos pelos empregados ao longo de um ano. Podemos supor que o número
+de acidentes por empregado segue uma distribuição de Poisson com parâmetro
+λ desconhecido. Temos as hipóteses:
+22
+
+=== PAGE 15 ===
+H0 : Os dados seguem uma distribuição de Poisson.
+H1 : Os dados não seguem uma distribuição de Poisson.
+Algumas diculdades surgem:
+ A distribuição de Poisson assume innitos valores (inteiros não-negativos).
+ Estimação do parâmetro λ.
+ Possivelmente possui alguns valores esperados pequenos.
+... desenvolver.
+Observação: O problema de estimar parâmetro λ reduz o número de graus
+de liberdade. A distribuição de Poisson supõe que o número de ocorrências
+é aleatório. Talvez não seja o caso aqui (se uma mesma pessoa sofre um
+acidente, a probabilidade dela sofrer outro deve alterar). Tentar uma distri-
+buição Binomial Negativa.
+Tabela 4: Número de acidentes por pessoas em um ano.
+Número de acidentes 0 1 2 3 4 5 ≥ 6
+Número de pessoas 181 9 4 10 7 4 5
+Exemplo 2.11. (Gibbons and Chakraborti (2003), Ex. 2.1, pág. 108) Um
+engenheiro de controle de qualidade toma 50 amostras de tamanho 13 e anota
+o número de defeitos em cada amostra (Tabela 5). Faça testes de bondade de
+ajuste para as distribuições Binomial e Poisson, a um nível de signicância
+de 5%.
+Tabela 5: Número de defeitos em amostras de tamanho 13.
+Número de defeitos 0 1 2 3 4 5 ≥ 6
+Frequência 10 24 10 4 1 1 0
+Lista de exercícios 2.3.
+23
+
+=== PAGE 16 ===
+ Sprent and Smeeton (2007), Cap. 4: 14.
+ Gibbons and Chakraborti (2003), Cap. 4: 1, 2, 21, 25.
+2.3.2 Estatísticas do tipo Kolmogorov-Smirnov para distribuições
+completamente especicadas
+Seja X1,X 2,··· ,Xn uma a.a. de uma função distribuição acumulada des-
+conhecida, denotada por F (·). Queremos testar se os dados vieram de uma
+determinada distribuição com fda FX. A estatística de Kolmogorov-Smirnov
+(K-S), baseada nos trabalhos de Kolmogorov (1933, 1941) e Smirnov (1939,
+1948), é calculada a partir da diferença entre as funções distribuição empírica
+e teórica. Relembremos que a função distribuição empírica Fn(x) converge
+em probabilidade para FX(x), pelo Teorema de Glivenko-Cantelli. Assim,
+para n grande, a diferença, em módulo, entre as funções distribuição verda-
+deira e empírica, |Fn(x)−FX(x)|, deveria ser pequena para todos os valores
+de x. Logo, temos a estatística
+Dn = sup
+x
+|Fn(x)−FX(x)|. (5)
+Podemos denir também as estatísticas de testes unilaterais como
+D+
+n = sup
+x
+[Fn(x)−FX(x)] D−
+n = sup
+x
+[FX(x)−Fn(x)]. (6)
+Gibbons and Chakraborti (2003) mostram que
+D+
+n =max
+
+max
+1≤i≤n
+i
+n−FX(X(i))
+
+, 0
+
+.
+Similarmente, temos que
+D−
+n =max
+
+max
+1≤i≤n
+
+FX(X(i))− i− 1
+n
+
+, 0
+
+,
+Dn =max
+
+max
+1≤i≤n
+i
+n−FX(X(i))
+
+,max
+1≤i≤n
+
+FX(X(i))− i− 1
+n
+
+, 0
+
+.
+Assim, as estatísticas de teste K-S dependem apenas das variáveis alea-
+tórias FX(X(i)), que são as estatísticas de ordem de uma distribuição U(0, 1)
+24
+
+=== PAGE 17 ===
+(devido ao teorema PIT), quando FX é contínua. Note que a estatística K-S
+independe da fda original FX. O teste de Kolmogorov-Smirnov é denominado
+de livre de distribuição porque o procedimento não depende de qual é a dis-
+tribuição em estudo, desde que seja completamente especicada em H0 e FX
+seja contínua. A derivação da distribuição de probabilidade de Dn (exata) é
+tediosa e pode ser encontrada no Teorema 3.2 de Gibbons and Chakraborti
+(2003), pág. 114.
+Para grandes amostras, Kolmogorov (1933) apresenta uma distribuição
+limite para Dn, dada pelo teorema abaixo.
+Teorema 7. Se FX é contínua, então para todo d> 0,
+lim
+n→∞
+P
+ 
+Dn≤d/√n
+
+=L(d), onde L(d) = 1− 2P∞
+i=1(−1)i−1e−2i2d2
+.
+Smirnov (1948) tabulou a função L(d). A Tabela 6 traz alguns valores
+críticos.
+Tabela 6: Valores críticos de Dn.
+P (Dn >d α/√n) 0.20 0.15 0.10 0.05 0.02 0.01
+dα 1.07 1.14 1.22 1.36 1.52 1.63
+A Tabela F em Siegel and Castellan, Jr. (2006) apresenta valores críticos
+exatos de Dn para n≤ 35 e níveis de signicância de 20%, 15%, 10%, 5%
+e 1% do teste bilateral. A Tabela A13 em Conover (1999) apresenta valores
+críticos exatos de Dn para n≤ 40 e níveis de signicância de 20%, 10%, 5%,
+2% e 1% para testes bilaterais. Tabela I em Gibbons and Chakraborti (2003)
+apresenta valores críticos exatos de Dn para n≤ 20 e níveis de signicância
+de 20%, 10%, 5%, 2% e 1% para testes bilaterais. Para testes unilaterais,
+os valores críticos são os mesmos considerando α∗ = α/2 do teste bilateral.
+Todas as tabelas apresentam na última linha os valores críticos baseando na
+aproximação assintótica (Teorema 7).
+Gibbons and Chakraborti (2003) apresentam também resultados para a
+distribuição assintótica de D+
+n .
+Teorema 8. Se FX é contínua, então para todo d≥ 0,
+lim
+n→∞
+P
+ 
+D+
+n≤d/√n
+
+= 1−e−2d2
+.
+25
+
+=== PAGE 18 ===
+Corolário 2. Se FX é contínua, então para todo d≥ 0,
+V = 4nD+2
+n
+D
+→
+n→∞
+χ2
+(2).
+Bandas de conança para FX(x) podem ser construídas usando Fn(x) e
+quantis da distribuição de Dn. Ver Conover (1999), pág. 438 ou Gibbons
+and Chakraborti (2003), pág. 124.
+No R: ks.test{stats}
+Aplicações:
+Seja X1,X 2,··· ,Xn uma a.a. de uma função distribuição acumulada
+desconhecida, denotada por FX. Desejamos testar ( H0) se os dados vieram
+de uma determinada distribuição, completamente especicada, digamos F0,
+contínua.
+No teste bilateral, desejamos testar
+H0 :FX(x) =F0(x), para todo x∈ R.
+H1 :FX(x)̸=F0(x), para algum x.
+Rejeitamos H0 ao nível de signicância α se Dn > dn,α, onde dn,α é o
+valor crítico da estatística K-S (Tabela F em Siegel and Castellan, Jr. (2006)
+ou Tabela A13 em Conover (1999)). Os testes unilaterais, embora possam
+ser construídos e testados, é de pouca aplicação prática para casos de uma
+amostra e não será abordado aqui neste capítulo. Retornaremos com eles no
+Capítulo 3 (Testes para duas amostras independentes).
+Exemplo 2.12. Teste se os dados da Tabela 7 seguem uma distribuição
+Uniforme no intervalo (0, 1).
+Tabela 7: Exemplo 1 (Conover, 1999), pag. 433.
+0.621 0.503 0.203 0.477 0.710 0.581 0.329 0.480 0.554 0.382
+Exemplo 2.13. (Sprent and Smeeton, 2007) Suponha que pedaços de os
+com 6 cm de comprimento estejam presos em cada extremidade e uma força
+seja aplicada até que se quebre. Se cada o quebrar no ponto mais fraco e
+26
+
+=== PAGE 19 ===
+é provável que isso ocorra em qualquer lugar ao longo de seu comprimento,
+os pontos de ruptura serão distribuídos uniformemente ao longo do intervalo
+(0, 6), onde a distância até a ruptura é medida em centímetros a partir da
+braçadeira esquerda. Teste se os dados seguem uma distribuição Uniforme
+no intervalo (0, 6).
+Tabela 8: Exemplo 4.2 (Sprent and Smeeton, 2007), pág. 86.
+0.6 0.8 1.1 1.2 1.4 1.7 1.8 1.9 2.2 2.4
+2.5 2.9 3.1 3.4 3.4 3.9 4.4 4.9 5.2 5.9
+Exemplo 2.14. Teste se a raiz quadrada dos dados da Tabela 9 segue uma
+distribuição Uniforme no intervalo (0, 1).
+Tabela 9: Exemplo 4.1 (Gibbons and Chakraborti, 2003), pág. 121.
+0.0123 0.1039 0.1954 0.2621 0.2802
+0.3217 0.3645 0.3919 0.4240 0.4814
+0.5139 0.5846 0.6275 0.6541 0.6889
+0.7621 0.8320 0.8871 0.9249 0.9634
+2.3.3 Estatísticas do tipo Anderson-Darling para distribuições com-
+pletamente especicadas
+A medida de bondade de ajuste de Anderson and Darling (1954) baseada na
+função de distribuição empírica é denida por
+W 2
+n =n
+Z +∞
+−∞
+[Fn(x)−FX(x)]2ψ(FX(x))fX(x)dx.
+onde ψ(FX(x)) é uma função peso.
+Seja X1,X 2,··· ,Xn uma a.a. de uma função distribuição acumulada
+desconhecida, denotada por F (·). Queremos testar se os dados vieram de
+uma determinada distribuição com fda FX. O teste de Anderson-Darling (A-
+D) é uma modicação do teste de Cramer-von Mises, diferindo apenas na
+27
+
+=== PAGE 20 ===
+função peso utilizada. A estatística de teste (Anderson and Darling, 1954) é
+dada por
+W 2
+n =−n− 1
+n
+nX
+i=1
+(2i− 1)[logUi(1−Un−i+1)], Ui =FX(X(i)).
+Uma desvantagem da estatística A-D é que valores críticos não são dispo-
+níveis para pequenas amostras (Anderson and Darling, 1954). A distribuição
+assintótica é dada, porém, envolvendo séries innitas envolvendo integrais.
+Lewis (1961) apresenta uma forma equivalente da estatística W 2
+n e calcula
+valores críticos da estatística para pequenas amostras. Marsaglia and Mar-
+saglia (2004) propõe um método para avaliar a distribuição assintótica com
+grande acurácia, que é a base para a função criada no R.
+No R: ad.test{goftest} .
+2.3.4 Testes de bondade de ajuste para famílias de distribuições
+Os testes desenvolvidos na Seção 2.3.2 são aplicados para distribuições com-
+pletamente especicadas. Por exemplo, os dados vieram de N(µ0,σ 2
+0) ou
+Exp(λ0)? Porém, em muitas situações, não sabemos quem é o parâmetro
+especíco θ0. Esse é o caso em problemas de Inferência Paramétrica, como
+testes de hipóteses e estimação de parâmetros. Tem-se a a.a. X1,X 2,...,X n
+de X∼FX(θ), onde o parâmetro θ é desconhecido. Apresentaremos a seguir
+testes de bondade de ajuste para a distribuição Normal e para a Exponencial.
+Inicialmente, denimos os coecientes de assimetria ( √β1) e curtose ( β2)
+de uma variável aleatória X como
+p
+β1 = E ([X−µ]3)
+σ3 e β2 = E ([X−µ]4)
+σ4 ,
+onde µ = E(X) e σ2 = Var (X). Para a distribuição Normal, temos que√β1 = 0 e β2 = 3. Seus respectivos amostrais são dados por
+p
+b1 = m3
+m3/2
+2
+e b2 = m4
+m2
+2
+,
+onde mk = 1
+n
+Pn
+i=1(Xi−X)k é o k-ésimo momento amostral.
+28
+
+=== PAGE 21 ===
+Testes para Normalidade
+Seja X1,X 2,...,X n uma a.a. de X∼F (θ). Desejamos testar
+H0 : Os dados seguem uma distribuição Normal, com média e variância desconhecidas.
+H1 : Os dados não seguem uma distribuição Normal.
+i. Teste de Lilliefors
+Sejam X =Pn
+i=1Xi/n a média amostral e S =
+q
+1
+n−1
+Pn
+i=1(Xi−X)2
+o desvio-padrão amostral. Seja
+Zi = Xi−X
+S , i = 1,...,n.
+O método de Lilliefors (1967, 1969) consiste em construir a estatística
+K-S e realizar o teste de hipóteses para a a.a. Z1,Z 2,...,Z n. O autor
+usou simulação de Monte Carlo para desenvolver uma tabela K-S de
+valores críticos (Tabela A14 em Conover (1999), Tabela O em Gibbons
+and Chakraborti (2003)).
+Uma ideia seria simplesmente testar que Zi∼tn−1, i= 1,...,n .
+No R: lillie.test{nortest}
+ii. Teste de Shapiro-Wilk
+Seja D =Pn
+i=1(Xi−X)2 = (n−1)S2 e considere as n estatísticas de or-
+dem X(i), i= 1,...,n . Usando a Tabela A16 (Conover, 1999), obtenha
+os k coecientes do teste de Shapiro-Wilk (S-W) a1,..., ak (baseados
+nos valores esperados e covariâncias das estatísticas de ordem de uma
+a.a. de tamanho n de uma normal padrão), onde k é aproximadamente
+n/2. A estatística de S-W (Shapiro and Wilk, 1965) é dada por
+W = 1
+D
+" kX
+i=1
+ai
+ 
+X(n−i+1)−X(i)
+
+#2
+.
+Observações: A estatística original envolve Pn
+i=1aiX(i) no numerador.
+Porém, Shapiro and Wilk (1965) mostram que −ai = an−i+1. Logo,
+29
+
+=== PAGE 22 ===
+Pn
+i=1aiX(i) =Pk
+i=1ai
+ 
+X(n−i+1)−X(i)
+
+. Sob H0, a distribuição de W
+depende apenas do tamanho da amostra n. O valor mínimo de W é
+na2
+1/(n− 1) e o máximo é 1. A distribuição de W é obtida apenas de
+forma aproximada. Royston (1982) propõe uma extensão do teste para
+grandes amostras, que é utilizado na função do R (R Core Team, 2019).
+No R: shapiro.test{stats}
+iii Teste de D'Agostino-Pearson
+A ideia é realizar testes para assimetria H0 :√β1 = 0 e para curtose
+H0 :β2 = 3.
+D'Agostino and Pearson (1973) sugerem utilizar a estatística
+K2 =X2(
+p
+b1) +X2(b2)
+a
+∼χ2
+(2),
+onde X(a) = δ sinh−1(a/λ) (denominado de desvio normal padroni-
+zado). As estatísticas X2(√b1) e X2(b2) são aproximações normais
+para √b1 e b2, respectivamente, podendo ser obtidas, por exemplo, em
+Sheskin (2000) (Eq. 4.8 e 5.7) ou em D'Agostino et al. (1990).
+No R: dagostino.pearson.test , disponível em
+https://stat.ethz.ch/pipermail/r-help/2004-August/056749.html.
+iv Teste baseados na medida de Anderson-Darling
+Quando ψ(p) = 1
+p(1−p) , temos a estatística de teste de Anderson-Darling
+A2 =−n− 1
+n
+nX
+i=1
+[2i− 1]log[p(i)(1−p(n−i+1))],
+onde p(i) = Φ((x(i)−bµ)/bσ) = Φ((x(i)−x)/s).
+No R: ad.test{nortest}
+Quando ψ(p) = 1 , temos a estatística de Crámer-von Mises, denida
+por
+W 2 = 1
+12n +
+nX
+i=1
+
+p(i)− 2i− 1
+2n
+2
+.
+30
+
+=== PAGE 23 ===
+No R: cvm.test{nortest}
+Razali and Wah (2011) comparam, via estudos de simulação, testes de
+hipóteses para normalidade baseados nas estatísticas K-S, S-W e A-D e con-
+cluem que o teste de Shapiro-Wilk é o mais poderoso teste de normalidade,
+corroborando os achados de Mendes and Pala (2003) e Keskin (2006). Por
+outro lado, como pode ser visto em Sheskin (2000), autores como D'Agostino
+et al. (1990) e Zar (1999) argumentam que o teste de D'Agostino-Pearson
+é um dois mais poderosos, em comparação com estatísticas tipo K-S e Qui-
+quadrado de bondade de ajuste. Outros testes podem ser vistos em Thode
+Jr. (2002), Seção 5.1, dentre outros.
+Teste de Lilliefors para a distribuição Exponencial
+Seja X1,X 2,...,X n uma a.a. de X∼F (θ). Desejamos testar
+H0 : Os dados seguem uma distribuição Exponencial, com parâmetro desconhecido.
+H1 : Os dados não seguem uma distribuição Exponencial.
+Sabemos que se X∼ Exp(λ), sua fdp é dada por fX(x) = 1
+λe−x/λ, x≥
+0, λ >0. Assim, X é da família de escala, ou seja, se Z = X/λ∼ Exp(1).
+Assim, como X é o estimador de λ, considere então Zi =Xi/X, i = 1,...,n .
+Assim, realizamos o teste aplicando a estatística K-S para Z1,...,Z n vinda
+de uma Exp(1). Quantis exatos são dados na Tabela A15 (Conover, 1999).
+Exemplos: Notas de aula .
+Lista de exercícios 2.4.
+ Conover (1999), Cap. 6, pág. 454-455: 1 a 5.
+ Gibbons and Chakraborti (2003), Cap. 4: 18, 19, 26.
+ Sprent and Smeeton (2007), Cap. 4: 1 a 4.
+2.4 Testes de hipóteses de simetria
+Seja X1,X 2,...,X n uma a.a. de com fdp fX e fda FX(x) =F (x−θ), F (0) =
+1/2, onde θ∈ R é a mediana (única), média µ∈ R e variância σ2 > 0. O
+31
+
+=== PAGE 24 ===
+coeciente de assimetria amostral é denido por
+b1 =
+Pn
+i=1(Xi−X)3
+[Pn
+i=1(Xi−X)2]3/2.
+As estatísticas de testes envolvem a variância amostral S2 e seu respectivo
+erro-padrão amostral S, a média amostral X e a mediana amostral eX.
+Se a distribuição FX é simétrica em torno de θ, então Z =X−θ, FZ(z) =
+P (Z≤ z) = P (Z≥− z) = 1−FZ(−z). Assim os testes de hipóteses para
+simetria são da forma
+H0 :F (x−θ) = 1−F (θ−x), ∀x∈ R.
+H1 :F (x−θ)̸= 1−F (θ−x), para algum x. (7)
+Uma forma equivalente seria
+H0 :f(θ−x) =f(θ +x), ∀x∈ R.
+H1 :f(θ−x)̸=f(θ +x), para algum x. (8)
+Assim, seguem alguns testes para simetria.
+i. (Cabilio and Masaro, 1996) Considere a medida de assimetria γ1(F ) =
+µ−θ
+σ dada por Yule (1944). Gastwirth (1971) propõe um teste baseado
+na versão amostral X− eX
+S . Cabilio and Masaro (1996) mostram que, sob
+certas condições,
+√n[X− eX− (µ−θ)]
+D
+→
+n→∞
+N(0,σ 2(γ1,F )),
+onde σ2(γ1,F ) = σ2 + 1
+4f 2
+X(θ)− 1
+fX(θ)
+h
+µ− 2
+Rθ
+−∞xfX(x)dx
+i
+. De outra
+forma, podemos escrever
+σ2
+∗(γ1,F ) = σ2(γ1,F )
+σ2 = 1+ 1
+4σ2f 2
+X(θ)− 1
+σfX(θ)
+
+µ− 2
+Z θ
+−∞
+xfX(x)dx
+
+.
+Assim, temos que
+X− eX− (µ−θ)
+σ/√n
+D
+→
+n→∞
+N(0,σ 2
+∗(γ1,F )).
+32
+
+=== PAGE 25 ===
+Se µ =θ, sob as mesmas condições iniciais, tem-se que
+σ2
+0(F ) = 1 + 1
+4σ2f 2
+X(0)− 1
+σfX(0)E
+
+X−µ
+σ
+.
+Para distribuições unimodais, 0.25≤ σ2
+0(F )≤ 1, sendo igual a 0.5708
+para a Normal padrão. Para distribuições da família de locação-escala,
+sendo Z = X−µ
+σ , então fX(x) = 1
+σfZ
+ x−µ
+σ
+
+ou de outra forma, σfX(x) =
+fZ
+ x−µ
+σ
+
+. Assim, temos que σfX(θ) = σfX(µ) = fZ(0). Além disso,
+E
+X−µ
+σ
+ =E|Z|. Logo, temos que
+SK = X− eX
+S/√n
+D
+→
+n→∞
+N(0,σ 2
+0(F )).
+Cabilio and Masaro (1996) encontram percentis da distribuição de SK
+para algumas distribuições FX, encontrando o valor de σ2
+0(F ) para cada
+exemplo. Porém, isto seria irrealístico em dados reais, pois não sabemos
+qual é a distribuição de origem dos dados. Os autores argumentam que
+o valor de σ2
+0(F ) = 0 .570796 da Normal poderia ser usado para os
+testes, esta funcionando como uma distribuição de calibração.
+Usando a hipótese adicional de continuidade de fX na vizinhança de
+0, Cabilio and Masaro (1996) encontram um estimador consistente de
+σ2(γ1,F ), dado por
+S2(γ1,Fn) =S2 + 1
+4f 2
+n(m)− dX
+fn(m),
+onde dX = 1
+n
+Pn
+i=1|Xi−X| e fn(m) = 1
+2n4/5 max
+
+1,Pn
+i=1 1 [m−n−1/5,m+n−1/5](Xi)
+	
+.
+Assim, para testar (7), sob H0, temos que µ−θ = 0 e usamos a esta-
+tística de teste
+S∗
+K = X− eX
+S(γ1,Fn)/√n
+a
+∼N(0, 1).
+ (Mira, 1999) Considere a medida de assimetria γ1(F ) = 2(µ−θ). Bon-
+ferroni (1933) provou que
+√n[bγ1(F )−γ1(F )]
+D
+→
+n→∞
+N(0,σ 2(γ1,F )),
+33
+
+=== PAGE 26 ===
+onde bγ1(F ) = 2( X− eX), σ2(γ1,F ) = 4 σ2 + 1
+fX(θ)2− 4
+fX(θ)Sθ e Sθ =
+µ− 2E(X1 (X≤θ)). Mira (1999) encontra um estimador consistente de
+σ2(γ1,F ), dado por
+S2
+c (γ1,Fn) = 4S2 +D2
+n,c− 4Dn,cSn,
+com Sn =X− 2
+n
+Pn
+i=1 1 (Xi≤ eX) e Dn,c = n1/5
+c
+ 
+X([n/2+cn4/5])−X([n/2+1−cn4/5])
+
+,
+c = 0.5 (caso normal) e [a] é a função maior inteiro, representando
+o menor inteiro menor ou igual a a. Assim, para testar (7), sob H0,
+temos que γ1(F ) = 0 e usamos a estatística de teste
+Z = 2(X− eX)
+Sc(γ1,Fn)/√n
+a
+∼N(0, 1).
+ (Miao et al., 2006) A proposta dos autores é propor um versão robus-
+ticada da estatística de teste de Cabilio and Masaro (1996), usando
+a estatística
+T = X− eX
+J ,
+onde J =pπ
+2D, com D = 1
+n
+Pn
+i=1|Xi− eX|. Considerando λ =µ−θ,
+Miao et al. (2006) mostram que
+√n
+"
+T− λpπ
+2τ
+#
+D
+→
+n→∞
+N(0,σ 2
+T ),
+onde
+σ2
+T = 2
+πτ 2
+
+σ2 + 1
+4f 2
+X(θ)− τ
+fX(θ) + λ2(σ2 +λ2)
+τ 2
+−λ2− 2λ
+τ [σ2− 2η + 2µγ−θτ ] + λ2
+τfX(θ)
+
+,
+τ =
+Rθ
+−∞x2fX(x)dx e γ =
+Rθ
+−∞xfX(x)dx.
+Sob H0, isto é, a distribuição é simétrica, λ = µ− θ = 0 , tem-se
+que σ2
+T0 = 2
+πτ 2
+h
+σ2 + 1
+4f 2
+X(θ)− τ
+fX(θ)
+i
+. Para aplicação, aproxima-se σ2
+T =
+0.5708. Assim, temos que
+Z = Tp
+0.5708/n
+a
+∼N(0, 1).
+34
+
+=== PAGE 27 ===
+No R: symmetry.test{lawstat} .
+Outro teste de hipóteses para simetria é baseado nas triplas da amostra
+(Xi,Xj,Xk) (Randles et al., 1980), porém não será abordado aqui.
+Exemplos: Notas de aula .
+2.5 Testes de hipóteses de aleatoriedade
+O objetivo aqui é testar se uma séries de eventos é aleatória ou não. Relembre
+que nas disciplinas de Inferência Não-Paramétrica sempre supomos que X
+e
+:
+X1,...,X n é uma amostra aleatória. Desejamos testar
+H0 : A amostra X
+e
+é aleatória × H1 : A amostra X
+e
+não é aleatória
+Ao passar por uma la de entrada para um cinema (ou INSS, entre ou-
+tras), a sequência formada por homens e mulheres seria aleatória? Suponha
+que nessa la tenham 10 pessoas, 5 homens (H) e 5 mulheres (M). Existem
+252 maneiras/congurações possíveis (permutação com elementos repetidos).
+Dois extremos de conguração são:
+HHHHHMMMMM ou HMHMHMHMHM,
+indicando não haver aleatoriedade. Na verdade, pensando em um experi-
+mento de lançamento de uma moeda n vezes, dado que ocorreram n1 caras e
+n2 coroas, n1 +n2 = n, temos n!
+n1!n2! (permutação com elementos repetidos)
+congurações possíveis.
+Podemos construir variáveis aleatórias a partir deste experimento para
+desenvolver testes de aleatoriedade.
+2.5.1 Testes de corridas
+Denição 11. Dada uma sequência ordenada de um ou mais tipos de sím-
+bolos, uma corrida é denida ser uma sucessão de um mesmo símbolo, que é
+seguida por um símbolo diferente.
+No caso dos exemplos na introdução da Seção, teríamos em HHHHH
+MMMMM 2 corridas e em H M H M H M H M H M 10 corridas. Se o resultado
+fosse HHMMMHMMHH, teríamos 5 corridas.
+35
+
+=== PAGE 28 ===
+Para variáveis binárias, calculamos o número de objetos do tipo 1, do tipo
+2 e o número de corridas.
+Para uma amostra aleatória X1,...,X n de variáveis quantitativas, Gibbons
+and Chakraborti (2003) sugerem comparar as observações com um ponto
+focal, geralmente a média ou mediana. Assim, sendo M = X ou M = eX,
+teremos
+Yi =
+ +, se Xi >M,
+−, se Xi <M, i = 1, 2,...,n.
+Se houver empate, isto é, Xi+1 = M , descarte e atualize n. Para variáveis
+contínuas, temos que P (Xi+1 =Xi) = 0.
+Assim, dado um número de n símbolos, n1 objetos do tipo 1 (H, por
+exemplo) e n2 objetos do tipo 2 (M, por exemplo), n1 +n2 = n, dena R
+como o número de corridas . Se tivermos um número de corridas próximo
+do m´inimo(R) = 2 ou próximo do m´aximo(R) = n, temos indícios de não-
+aleatoriedade (rejeição de H0). Valores medianos do número de corridas são
+favoráveis à aceitação da hipótese nula.
+Para derivar um teste de aleatoriedade baseado no número de corridas
+R, precisamos construir a distribuição de probabilidade de R sob a hipótese
+nula.
+Sejam r1 o número de corridas do tipo 1 e r2 o tipo de corridas do tipo
+2, r =r1 +r2 o total de corridas. Assim, R =R1 +R2.
+Temos que P (R1 =r1,R 2 =r2) é o número de arranjos distinguíveis com
+r1 do tipo 1 e r2 do tipo 2, dividido pelo total de arranjos distinguíveis, dado
+por n!
+n1!n2! .
+A seguir apresentamos resultados das distribuições conjunta e marginal
+( (R1,R 2) e R1) bem como a distribuição de R e seus momentos. As provas
+podem ser vistas em Gibbons and Chakraborti (2003).
+Teorema 9. Sejam R1 e R2 os respectivos números de corridas de n1 objetos
+do tipo 1 e n2 objetos do tipo 2, respectivamente em uma amostra aleatória
+de tamanho n = n1 +n2. A distribuição de probabilidade conjunta de R1 e
+R2 é dada por
+fR1,R2(r1,r 2) =
+c
+ n1− 1
+r1− 1
+ n2− 1
+r2− 1
+
+ n
+n1
+ ,
+r1 = 1, 2,...,n 1
+r2 = 1, 2,...,n 2
+r1 =r2 ou r2 =±1,
+(9)
+onde c = 2 se r1 =r2 ou c = 1 se r1 =r2± 1.
+36
+
+=== PAGE 29 ===
+Corolário 3. A distribuição marginal de R1 é dada por
+fR1(r1) =
+ n1− 1
+r1− 1
+ n2 + 1
+r1
+
+ n
+n1
+ , r 1 = 1, 2,...,n 1. (10)
+A distribuição de R2 é similar intercambiando n1 e n2.
+Teorema 10. A distribuição de probabilidade de R é dada por
+fR(r) = (11)
+
+
+2
+
+ n1− 1
+r/2− 1
+
+
+
+ n2− 1
+r/2− 1
+
+
+
+ n
+n1
+
+
+, se r é par ,
+
+ n1− 1
+(r− 1)/2
+
+
+
+ n2− 1
+(r− 3)/2
+
++
+
+ n1− 1
+(r− 3)/2
+
+
+
+ n2− 1
+(r− 1)/2
+
+
+
+ n
+n1
+
+
+, se r é ímpar ,
+para r = 2, 3,...,n .
+O valor esperado e a variância de R são dados por
+E(R) = 1 + 2n1n2
+n e Var (R) = 2n1n2(2n1n2−n)
+n2(n− 1) .
+Embora tenhamos a distribuição exata, os cálculos computacionais para
+grandes amostras podem ser demorados. Assim, podemos usar a distribuição
+assintótica de R,
+Z = R−E(R)p
+Var (R)
+a
+∼N(0, 1).
+Como a variável aleatória R é discreta, utilizamos uma correção de con-
+tinuidade , que é subtrair 0.5 no numerador de Z quando este for positivo
+ou adicionar a mesma quantidade quando o numerador for negativo. Desta
+forma, estamos reduzindo o valor da estatística Z, favorecendo a hipótese
+nula (ou reduzindo a probabilidade do erro tipo I). Assim, temos
+37
+
+=== PAGE 30 ===
+Zc = R−E(R)− 0.5∗sign(R−E(R))p
+Var (R)
+a
+∼N(0, 1).
+No R: runs.test{snpar}
+Observação: São fornecidas funções no R (R Core Team, 2019) para o número
+de corridas R para variáveis Bernoulli's ou numéricas, além da função de
+probabilidade, função distribuição acumulada e quantis de R (Notas de aula).
+Gibbons and Chakraborti (2003, Seção 3.2) apresentam um teste de ale-
+atoriedade baseado no comprimento da corrida mais longa. Outro método
+conhecido é o chamado runs up and down test (Gibbons and Chakraborti,
+2003, Seção 3.4), considerando as diferenças entre observações sucessivas.
+Yi =
+ +, se Xi+1 >X i,
+−, se Xi+1 <X i, i= 1, 2,...,n − 1.
+2.5.2 Teste de aleatoriedade de Bartels
+Esta estatística de teste é construída utilizando os postos da amostra X
+e
+:
+X1,...,X n. Porém, somente pode ser aplicada para variáveis numéricas. Bar-
+tels (1982) adapta a estatística de Von Neumann's Ratio para testar alea-
+toriedade.
+Denição 12. Dada uma amostra X1,...,X n, o posto de uma observação
+Xi, denotado por Ri, é a posição (ascendente) que Xi ocupa na amostra.
+Dada uma amostra X1,...,X n, Bartels (1982) propõe a estatística
+NM =
+n−1X
+i=1
+[Ri−Ri+1]2. (12)
+Temos que
+ n− 1<NM < (n− 1)(N 2 +n− 3)/3, se n é par ,
+n− 1<NM < (n− 1)(N 2 +n− 3)/3− 1, se n é ímpar .
+A distribuição exata de NM não tem expressão fechada. Bartels (1982)
+apresenta uma tabela com valores críticos da estatística, para 4≤ n≤ 10.
+Para grandes amostras, trabalha-se com a razão RVN dada por
+38
+
+=== PAGE 31 ===
+RVN =
+Pn−1
+i=1 (Ri−Ri+1)2
+Pn
+i=1
+ 
+Ri−R
+2
+a
+∼N(2,σ 2
+n),
+onde σ2
+n = 4(n−2)(5n2−2n−9)
+5n(n+1)(n−1)2 ≈ 20
+5n+7≈ 4/n.
+Caso não existam empates, o denominador de RVN é dado por n(n2−
+1)/12.
+No R: bartels.test{lawstat} .
+Sheskin (2000), Unidade 10, apresenta outros testes de aleatoriedade.
+Exemplos: Notas de aula .
+2.5.3 Possíveis casos de não-aleatoriedade
+Dois modelos interessantes que poderiam levar à rejeição da hipótese de ale-
+atoriedade são: Ponto de mudança e tendência. Apresentamos nesta seção
+os testes do ponto de mudança e de tendência de Cox-Stuart.
+i) Teste de ponto de mudança
+Dada uma amostra X
+e
+: X1,...,X N (por exemplo, Figura 6), desejamos
+testar
+H0 : Não há mudança abrupta na sequência dos dados
+H1 : Há mudança abrupta na sequência dos dados . (13)
+Trataremos dois casos: o primeiro quando a variável é tipo 0− 1 e um
+segundo para variáveis contínuas.
+No primeiro caso, vamos supor que X ∼ Bernoulli(p). Adaptamos as
+hipóteses do teste como
+H0 : Não há mudança abrupta na probabilidade de sucessos ao longo do tempo.
+H1 : Há mudança abrupta na probabilidade de sucessos ao longo do tempo.
+A estatística de teste é dada por
+Dm,n = N
+mn max
+1≤j≤N−1
+Sj− jm
+N
+, (14)
+39
+
+=== PAGE 32 ===
+Figura 6: Ponto de mudança.
+onde m =PN
+i=1Xi (número de sucessos), n =N−m (número de fracas-
+sos) e Sj = Pj
+i=1Xi (número de sucessos até o instante j). Os valores
+críticos de Dm,n são encontrados na Tabela LII para pequenas amostras ou
+na Tabela LIII para grandes amostras (Siegel and Castellan, Jr., 2006).
+Observação: A posição em que ocorre o máximo em Dm,n é o ponto de mu-
+dança.
+Para variáveis contínuas, a estatística de teste é baseada nos postos
+Ri, i= 1,...,n . Seja Wj =Pj
+i=1Ri. As hipóteses são as mesmas de (13).
+Estatística de teste:
+Km,n = max
+1≤j≤N−1
+2Wj−j(N + 1)
+ = 2 max
+1≤j≤N−1
+Wj−j(N + 1)/2
+. (15)
+Os valores críticos da estatística Km,n são dados na Tabela J (Siegel and
+Castellan, Jr., 2006).
+Observação: SN =PN
+i=1Ri, então SN =N(N + 1)/2.
+A posição em que ocorre o máximo em Km,n, neste caso m, é o ponto de
+mudança.
+Para grandes amostras, seja m o ponto de mudança e Wm a soma dos
+postos de X1,X 2,...,X m. Tem-se que E(Wm) = m(N + 1)/2 e Var (Wm) =
+mn(N + 1)/12. Como Wm é uma variável aleatória discreta, para grandes
+amostras, utilizamos a aproximação pela Normal com correção de continui-
+dade, Para grandes amostras, trabalha-se com a razão RVN dada por
+40
+
+=== PAGE 33 ===
+Z = W−E(Wm)− 0.5∗sign(W−E(Wm))p
+(Var (Wm))
+a
+∼N(0, 1).
+Exemplos: Notas de aula .
+ii) Teste de tendência de Cox-Stuart
+Dada uma amostra X
+e
+:X1,...,X n′, considerando que as observações são
+independentes, em uma escala pelo menos ordinal, desejamos testar se existe
+uma tendência (crescente ou decrescente) na sequência. Considere os pares
+(X1,X 1+c), (X2,X 2+c),..., (Xn′−c,Xn′), onde c = n′/2 se n′ é par ou c =
+(n′ + 1)/2 se n′ é ímpar. Note que, para n′ ímpar, descartamos a observação
+X(n′+1)/2.
+Seja a variável Y como
+Yj =
+ +, se Xj+c >X j,
+−, se Xj+c <X j, j = 1, 2,...,c.
+Se Xj+c =Xj, descarte a observação. Seja n o número nal de observações
+de Y . Sob H0, Y ∼ Binomial(n, 1/2). Utilizamos Y como a estatística de
+teste para testar se há tendência ou não nos dados.
+Observação: Conover (1999) aponta que o teste de tendência de Cox-Stuart
+é uma variação do teste do Sinal, que será abordado na Seção 3.
+No R: cox.stuart.test{randtests} .
+Exemplos: Notas de aula .
+Lista de exercícios 2.5.
+ Conover (1999), Cap. 3, pág. 176-177: 3-8.
+ Sprent and Smeeton (2007), Cap. 4: 8 a 12.
+ Gibbons and Chakraborti (2003), Cap. 3: 14, 15, 18.
+41
+

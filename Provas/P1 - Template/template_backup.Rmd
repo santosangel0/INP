@@ -1,0 +1,481 @@
+---
+title: "Template dos Exercicios"
+
+author: "Angelo dos Santos"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+geometry: "margin=1in"
+colorlinks: true
+linkcolor: "blue"
+citecolor: "blue"
+urlcolor: "blue"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    highlight: tango
+    fig_caption: true
+    latex_engine: pdflatex
+    keep_tex: false
+---
+
+
+
+# Apêndice: Código Fonte Computacional {#codigo-fonte}
+
+Abaixo disponibiliza-se a íntegra dos scripts computacionais em linguagem R utilizados para a configuração do ambiente, cálculo da tabela de estimadores, geração dos gráficos analíticos e confecção do mapa espacial acessível. Cada bloco respeita rigorosamente o limite de 80 colunas demarcado pela régua visual (`# ==============================================================================`), garantindo perfeita acomodação às margens da página impressa.
+
+## 1. Configuração do Ambiente e Pacotes
+
+```r
+# ==============================================================================
+# 1. CONFIGURAÇÃO GLOBAL E CARREGAMENTO DE PACOTES (LIMITE: 80 COLUNAS)
+# ==============================================================================
+pacotes <- c("ggplot2", "knitr", "kableExtra", "scales", "maps")
+
+pacotes_novos <- pacotes[!(pacotes %in% installed.packages()[, "Package"])]
+if (length(pacotes_novos) > 0) {
+  install.packages(pacotes_novos, dependencies = TRUE)
+}
+
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(scales)
+library(maps)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  dpi = 300
+)
+```
+
+## 2. Construção da Tabela com Expressões Matemáticas LaTeX
+
+```r
+# ==============================================================================
+# 2. CONSTRUÇÃO DA TABELA 1 COM EXPRESSÕES LATEX COMPLEXAS (80 COLUNAS)
+# ==============================================================================
+expr_en <- paste0(
+  "$\\hat{\\boldsymbol{\\beta}}_{\\text{EN}} = \\arg\\min_{\\boldsymbol",
+  "{\\beta}} \\left\\{ \\frac{1}{2n} \\|\\mathbf{y} - \\mathbf{X}",
+  "\\boldsymbol{\\beta}\\|_2^2 + \\lambda \\left[ \\alpha \\|\\boldsymbol",
+  "{\\beta}\\|_1 + \\frac{1-\\alpha}{2} \\|\\boldsymbol{\\beta}\\|_2^2 ",
+  "\\right] \\right\\}$"
+)
+
+expr_lw <- paste0(
+  "$\\hat{\\boldsymbol{\\Sigma}}_{\\text{LW}} = (1 - \\hat{\\rho}^*) ",
+  "\\mathbf{S} + \\hat{\\rho}^* \\left( \\frac{\\mathrm{tr}(\\mathbf{S})}",
+  "{p} \\right) \\mathbf{I}_p, \\quad \\hat{\\rho}^* = \\frac{\\sum_{i ",
+  "\\neq j} \\widehat{\\mathrm{Var}}(s_{ij})}{\\sum_{i \\neq j} s_{ij}^2",
+  " + \\sum_{i=1}^p (s_{ii} - \\bar{s})^2}$"
+)
+
+expr_mle <- paste0(
+  "$\\hat{\\boldsymbol{\\theta}}_{\\text{MLE}} = \\arg\\max_{\\boldsymbol",
+  "{\\theta}} \\sum_{i=1}^n \\log f(x_i \\mid \\boldsymbol{\\theta}), ",
+  "\\quad \\boldsymbol{\\mathcal{I}}(\\boldsymbol{\\theta}) = -\\mathbb{E}",
+  "\\left[ \\nabla_{\\boldsymbol{\\theta}}^2 \\ell(\\boldsymbol{\\theta})",
+  " \\right]$"
+)
+
+expr_gmm <- paste0(
+  "$\\hat{\\boldsymbol{\\gamma}}_{\\text{GMM}} = \\arg\\min_{\\boldsymbol",
+  "{\\gamma}} \\left[ \\frac{1}{n} \\sum_{i=1}^n \\mathbf{g}(z_i, ",
+  "\\boldsymbol{\\gamma}) \\right]^\\top \\hat{\\mathbf{W}}_n \\left[ ",
+  "\\frac{1}{n} \\sum_{i=1}^n \\mathbf{g}(z_i, \\boldsymbol{\\gamma}) ",
+  "\\right]$"
+)
+
+prop_en <- "Consistente na seleção se $\\lambda_n / \\sqrt{n} \\to 0$"
+prop_lw <- "Ótimo assintótico sob norma de Frobenius"
+prop_mle <- paste0(
+  "$\\sqrt{n}(\\hat{\\boldsymbol{\\theta}} - \\boldsymbol{\\theta}_0) ",
+  "\\xrightarrow{d} \\mathcal{N}\\left(\\mathbf{0}, \\boldsymbol",
+  "{\\mathcal{I}}^{-1}(\\boldsymbol{\\theta}_0)\\right)$"
+)
+prop_gmm <- paste0(
+  "$\\sqrt{n}(\\hat{\\boldsymbol{\\gamma}} - \\boldsymbol{\\gamma}_0) ",
+  "\\xrightarrow{d} \\mathcal{N}\\left(\\mathbf{0}, (\\mathbf{G}^\\top ",
+  "\\mathbf{S}^{-1} \\mathbf{G})^{-1}\\right)$"
+)
+
+tabela_dados <- data.frame(
+  Estimador = c(
+    "Elastic-Net Penalizado",
+    "Encolhimento de Covariância (Ledoit-Wolf)",
+    "Máxima Verossimilhança Generalizada (MLE)",
+    "Momentos Generalizados (GMM)"
+  ),
+  Parametro = c(
+    "$\\boldsymbol{\\beta} \\in \\mathbb{R}^p$",
+    "$\\boldsymbol{\\Sigma} \\in \\mathcal{S}_{++}^p$",
+    "$\\boldsymbol{\\theta} \\in \\Theta \\subset \\mathbb{R}^k$",
+    "$\\boldsymbol{\\gamma} \\in \\mathbb{R}^m$"
+  ),
+  Expressao_Analitica = c(expr_en, expr_lw, expr_mle, expr_gmm),
+  Propriedade_Assintotica = c(prop_en, prop_lw, prop_mle, prop_gmm),
+  stringsAsFactors = FALSE
+)
+
+# Renderização no PDF via LaTeX
+kable(
+  tabela_dados,
+  format = "latex",
+  booktabs = TRUE,
+  escape = FALSE,
+  caption = paste0(
+    "Formulações analíticas e propriedades assintóticas dos ",
+    "estimadores estatísticos investigados."
+  ),
+  col.names = c(
+    "Estimador",
+    "Parâmetro",
+    "Expressão Analítica do Estimador",
+    "Propriedade Assintótica"
+  )
+) %>%
+  kable_styling(
+    latex_options = c("striped", "hold_position"),
+    font_size = 8
+  ) %>%
+  column_spec(1, width = "3.0cm", bold = TRUE) %>%
+  column_spec(2, width = "1.8cm") %>%
+  column_spec(3, width = "6.4cm") %>%
+  column_spec(4, width = "3.8cm")
+```
+
+## 3. Gráfico 1: Dados Categóricos e Paleta Sequencial Monocromática
+
+```r
+# ==============================================================================
+# 3. GRÁFICO 1: CONVERGÊNCIA DO EQM (DADOS CATEGÓRICOS COM SÍMBOLOS DISTINTOS)
+# ==============================================================================
+set.seed(101)
+tamanhos <- c(50, 100, 200, 500)
+modelos <- c(
+  "M1: Mínimos Quadrados (MQO)",
+  "M2: Regularização Ridge",
+  "M3: Seleção LASSO",
+  "M4: Elastic-Net Misto"
+)
+
+df_eqm <- data.frame(
+  Tamanho = rep(tamanhos, each = 4),
+  Modelo = factor(rep(modelos, times = 4), levels = modelos),
+  EQM = c(
+    0.88, 0.62, 0.54, 0.49,
+    0.58, 0.41, 0.36, 0.31,
+    0.34, 0.25, 0.22, 0.19,
+    0.18, 0.14, 0.12, 0.10
+  )
+)
+
+# Construção do gráfico com ggplot2 respeitando a régua de 80 colunas
+p1 <- ggplot(
+  df_eqm,
+  aes(x = Tamanho, y = EQM, group = Modelo, shape = Modelo, color = Modelo)
+) +
+  geom_line(linewidth = 0.85, linetype = "solid") +
+  geom_point(size = 3.5, stroke = 0.9) +
+  scale_shape_manual(
+    name = "Especificação do Modelo:",
+    values = c(16, 17, 15, 18) # Círculo, Triângulo, Quadrado, Losango
+  ) +
+  scale_color_grey(
+    name = "Especificação do Modelo:",
+    start = 0.10, # Cinza escuro
+    end = 0.65    # Cinza médio claro
+  ) +
+  guides(
+    shape = guide_legend(
+      nrow = 2,
+      byrow = TRUE,
+      title.position = "top",
+      title.hjust = 0.5
+    ),
+    color = guide_legend(
+      nrow = 2,
+      byrow = TRUE,
+      title.position = "top",
+      title.hjust = 0.5
+    )
+  ) +
+  scale_x_continuous(breaks = tamanhos) +
+  scale_y_continuous(
+    limits = c(0.05, 0.95),
+    breaks = seq(0.1, 0.9, by = 0.2)
+  ) +
+  labs(
+    title = expression(
+      paste(
+        "Convergência do Estimador: ",
+        widehat(EQM)(hat(theta)),
+        " em Função de ", n, " sob ",
+        H[0]: bold(beta) == bold(beta)[0]
+      )
+    ),
+    subtitle = paste(
+      "Modelos categóricos com paleta sequencial monocromática",
+      "e símbolos distintos"
+    ),
+    x = expression(paste("Tamanho da Amostra (", n, ")")),
+    y = expression(paste("Erro Quadrático Médio: ", widehat(EQM)(hat(theta)))),
+    caption = paste(
+      "Nota: Simulação de Monte Carlo com 2.000 iterações.",
+      "Paleta monocromática para daltônicos."
+    )
+  ) +
+  theme_minimal(base_size = 10.5) +
+  theme(
+    plot.title = element_text(
+      face = "bold", size = 10.5, color = "#111111", margin = margin(b = 4)
+    ),
+    plot.subtitle = element_text(
+      size = 8.5, color = "#444444", margin = margin(b = 8)
+    ),
+    axis.title.x = element_text(
+      face = "bold", size = 9.5, margin = margin(t = 6)
+    ),
+    axis.title.y = element_text(
+      face = "bold", size = 9.5, margin = margin(r = 6)
+    ),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 8.5),
+    legend.text = element_text(size = 8),
+    legend.box = "vertical",
+    legend.background = element_rect(
+      fill = "#FAFAFA", color = "#E0E0E0", linewidth = 0.4
+    ),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "#ECECEC", linewidth = 0.4)
+  )
+
+print(p1)
+```
+
+## 4. Gráfico 2: Paleta Divergente Monocromática com Símbolos Direcionais
+
+```r
+# ==============================================================================
+# 4. GRÁFICO 2: DISCREPÂNCIA PARAMÉTRICA (PALETA DIVERGENTE COM MARCADORES +/-)
+# ==============================================================================
+set.seed(202)
+coef_nomes <- paste0("beta[", 1:10, "]")
+desvios_valores <- c(
+  0.42, -0.38, 0.22, -0.55, 0.63,
+  -0.18, -0.27, 0.35, -0.41, 0.19
+)
+
+df_desvios <- data.frame(
+  Parametro = factor(coef_nomes, levels = coef_nomes),
+  Desvio = desvios_valores,
+  stringsAsFactors = FALSE
+)
+
+# Identificação da polaridade (positivo vs negativo)
+df_desvios$Polaridade <- ifelse(
+  df_desvios$Desvio >= 0,
+  "Positivo (+)",
+  "Negativo (-)"
+)
+
+# Gráfico divergente com dupla codificação
+p2 <- ggplot(
+  df_desvios,
+  aes(x = Parametro, y = Desvio, shape = Polaridade, fill = Polaridade)
+) +
+  geom_hline(
+    yintercept = 0, linetype = "dashed", color = "#333333", linewidth = 0.7
+  ) +
+  geom_segment(
+    aes(x = Parametro, xend = Parametro, y = 0, yend = Desvio),
+    color = "#555555",
+    linewidth = 0.6
+  ) +
+  geom_point(size = 4.0, color = "#000000", stroke = 1.0) +
+  scale_shape_manual(
+    name = "Polaridade do Desvio:",
+    values = c("Positivo (+)" = 24, "Negativo (-)" = 25)
+  ) +
+  scale_fill_manual(
+    name = "Polaridade do Desvio:",
+    values = c("Positivo (+)" = "#1A1A1A", "Negativo (-)" = "#CCCCCC")
+  ) +
+  guides(
+    shape = guide_legend(title.position = "top", title.hjust = 0.5),
+    fill = guide_legend(title.position = "top", title.hjust = 0.5)
+  ) +
+  scale_x_discrete(labels = scales::parse_format()) +
+  scale_y_continuous(
+    limits = c(-0.7, 0.8),
+    breaks = seq(-0.6, 0.8, by = 0.2)
+  ) +
+  labs(
+    title = expression(
+      paste(
+        "Discrepância do Estimador: ",
+        hat(Delta)[j] == hat(beta)[j] - beta[j]^"*",
+        " sob Penalidade ", lambda > 0
+      )
+    ),
+    subtitle = paste(
+      "Paleta divergente monocromática com símbolos direcionais",
+      "(Positivo vs. Negativo)"
+    ),
+    x = expression(paste("Coeficientes Regulados do Modelo (", beta[j], ")")),
+    y = expression(
+      paste("Desvio Observado: ", hat(Delta)[j] == hat(beta)[j] - beta[j]^"*")
+    ),
+    caption = paste(
+      "Nota: Triângulos apontando para cima indicam superestimação (+);",
+      "para baixo indicam subestimação (-)."
+    )
+  ) +
+  theme_minimal(base_size = 10.5) +
+  theme(
+    plot.title = element_text(
+      face = "bold", size = 10.5, color = "#111111", margin = margin(b = 4)
+    ),
+    plot.subtitle = element_text(
+      size = 8.5, color = "#444444", margin = margin(b = 8)
+    ),
+    axis.title.x = element_text(
+      face = "bold", size = 9.5, margin = margin(t = 6)
+    ),
+    axis.title.y = element_text(
+      face = "bold", size = 9.5, margin = margin(r = 6)
+    ),
+    axis.text.x = element_text(size = 9, face = "bold"),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 8.5),
+    legend.text = element_text(size = 8),
+    legend.background = element_rect(
+      fill = "#FAFAFA", color = "#E0E0E0", linewidth = 0.4
+    ),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "#ECECEC", linewidth = 0.4)
+  )
+
+print(p2)
+```
+
+## 5. Gráfico 3: Mapa Espacial com Paleta Divergente Monocromática e Símbolos
+
+```r
+# ==============================================================================
+# 5. GRÁFICO 3: MAPA ESPACIAL DIVERGENTE COM CODIFICAÇÃO POR SÍMBOLOS (80 COL)
+# ==============================================================================
+sa_paises <- c(
+  "Brazil", "Argentina", "Chile", "Colombia", "Peru",
+  "Venezuela", "Bolivia", "Paraguay", "Uruguay", "Ecuador"
+)
+sa_map <- subset(map_data("world"), region %in% sa_paises)
+
+sa_dados <- data.frame(
+  Pais = c(
+    "Brasil", "Argentina", "Chile", "Colômbia", "Peru",
+    "Venezuela", "Bolívia", "Paraguai", "Uruguai", "Equador"
+  ),
+  region = sa_paises,
+  long = c(
+    -53.0, -64.0, -71.0, -73.0, -75.0,
+    -66.0, -64.5, -58.0, -56.0, -78.5
+  ),
+  lat  = c(
+    -10.5, -34.5, -33.5,   4.0,  -9.0,
+      7.0, -16.5, -23.5, -32.5,  -1.5
+  ),
+  Desvio = c(
+    0.48, -0.36, 0.29, -0.52, 0.15,
+    -0.61, -0.22, 0.38, 0.41, -0.19
+  ),
+  stringsAsFactors = FALSE
+)
+
+sa_dados$Polaridade <- ifelse(
+  sa_dados$Desvio >= 0,
+  "Positivo (+)",
+  "Negativo (-)"
+)
+sa_dados$Magnitude <- abs(sa_dados$Desvio)
+
+# Construção do mapa espacial com ggplot2
+p_map <- ggplot() +
+  geom_polygon(
+    data = sa_map,
+    aes(x = long, y = lat, group = group),
+    fill = "#F2F2F2",
+    color = "#888888",
+    linewidth = 0.35
+  ) +
+  geom_point(
+    data = sa_dados,
+    aes(
+      x = long, y = lat,
+      shape = Polaridade,
+      fill = Polaridade,
+      size = Magnitude
+    ),
+    color = "#000000",
+    stroke = 1.0
+  ) +
+  scale_shape_manual(
+    name = "Polaridade Regional:",
+    values = c("Positivo (+)" = 24, "Negativo (-)" = 25)
+  ) +
+  scale_fill_manual(
+    name = "Polaridade Regional:",
+    values = c("Positivo (+)" = "#1A1A1A", "Negativo (-)" = "#CCCCCC")
+  ) +
+  scale_size_continuous(
+    name = "Magnitude |Delta_s|:",
+    range = c(3.2, 7.0),
+    breaks = c(0.2, 0.4, 0.6)
+  ) +
+  coord_fixed(xlim = c(-85, -34), ylim = c(-56, 13), ratio = 1.15) +
+  labs(
+    title = expression(
+      paste(
+        "Distribuição Espacial da Discrepância: ",
+        hat(Delta)[s] == hat(theta)[s] - theta[0],
+        " sob ", H[0]: delta == 0
+      )
+    ),
+    subtitle = paste(
+      "Paleta divergente monocromática com símbolos direcionais",
+      "para daltônicos"
+    ),
+    x = "Longitude",
+    y = "Latitude",
+    caption = paste(
+      "Nota: Marcadores para cima (escuro) indicam anomalia positiva (+);",
+      "para baixo (claro) negativa (-)."
+    )
+  ) +
+  theme_minimal(base_size = 10.5) +
+  theme(
+    plot.title = element_text(
+      face = "bold", size = 10.5, color = "#111111", margin = margin(b = 4)
+    ),
+    plot.subtitle = element_text(
+      size = 8.5, color = "#444444", margin = margin(b = 8)
+    ),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 8),
+    legend.text = element_text(size = 7.5),
+    legend.background = element_rect(
+      fill = "#FAFAFA", color = "#E0E0E0", linewidth = 0.4
+    ),
+    panel.grid.major = element_line(
+      color = "#E5E5E5", linewidth = 0.3, linetype = "dotted"
+    ),
+    panel.grid.minor = element_blank()
+  )
+
+print(p_map)
+```

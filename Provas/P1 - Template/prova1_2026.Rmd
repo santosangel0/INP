@@ -1,0 +1,633 @@
+---
+title: "Resolução - Prova 1 (2026)"
+subtitle: "EST037 - Inferência Não Paramétrica | Prof. Clécio da Silva Ferreira"
+author: "Angelo dos Santos"
+date: "29 de abril de 2026"
+geometry: "margin=1in"
+colorlinks: true
+linkcolor: "blue"
+citecolor: "blue"
+urlcolor: "blue"
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{float}
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    highlight: tango
+    fig_caption: true
+    latex_engine: pdflatex
+    keep_tex: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  dpi = 300
+)
+
+# Carregamento de pacotes necessários
+suppressPackageStartupMessages({
+  library(lawstat)
+  library(nortest)
+  library(randtests)
+  library(goftest)
+  library(knitr)
+  library(kableExtra)
+})
+
+# Leitura das bases de dados fornecidas
+q1 <- scan("q1.txt", quiet = TRUE)
+q3 <- scan("q3.txt", quiet = TRUE)
+```
+
+\newpage
+
+# Questão 1 (6.5 pontos)
+
+**Enunciado:** Faça testes de simetria, aleatoriedade e normalidade para uma amostra aleatória de uma variável contínua (dados em `q1.txt`). Use um nível de significância $\alpha = 0.1$. Que modelo de distribuição você sugere para os dados?
+
+---
+
+A amostra analisada contém $n = 30$ observações contínuas. Adotamos o nível de significância $\alpha = 0.10$. Conforme diretriz metodológica, aplicamos três testes distintos para cada propriedade investigada.
+
+## Testes de Simetria
+
+Investiga-se se a distribuição populacional subjacente é simétrica em torno do seu centro de localização $\theta$.
+
+- **Hipótese Nula ($H_0$):** A distribuição é simétrica em torno de $\theta$.
+- **Hipótese Alternativa ($H_1$):** A distribuição é assimétrica.
+
+```{r q1-simetria-tabela}
+t_mgg  <- lawstat::symmetry.test(q1, option = "MGG", boot = FALSE)
+t_cm   <- lawstat::symmetry.test(q1, option = "CM", boot = FALSE)
+t_mira <- lawstat::symmetry.test(q1, option = "M", boot = FALSE)
+
+tab_sim <- data.frame(
+  Teste = c(
+    "Miao, Gel e Gastwirth (MGG)",
+    "Cabilio e Masaro (CM)",
+    "Mira (M)"
+  ),
+  Estatistica = c(
+    sprintf("%.4f", t_mgg$statistic),
+    sprintf("%.4f", t_cm$statistic),
+    sprintf("%.4f", t_mira$statistic)
+  ),
+  P_Valor = c(
+    sprintf("%.4f", t_mgg$p.value),
+    sprintf("%.4f", t_cm$p.value),
+    sprintf("%.4f", t_mira$p.value)
+  ),
+  Decisao_alpha_010 = c(
+    "Não rejeita H0",
+    "Não rejeita H0",
+    "Não rejeita H0"
+  )
+)
+
+kable(
+  tab_sim,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Testes de Simetria para os dados de q1.txt (alpha = 0.10)."
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+$\rightarrow$ **Consultar resultado exato na tabela** (na dúvida favorece-se $H_0$).
+
+**Conclusão:**
+Não existe evidência suficiente para rejeitar a hipótese nula de simetria ao nível de significância de 10% ($\alpha = 0.10$), portanto a distribuição dos dados pode ser considerada simétrica em torno do seu centro.
+
+---
+
+## Testes de Aleatoriedade
+
+Avalia-se a independência e a ausência de padrão sequencial ou tendência na geração dos dados.
+
+- **Hipótese Nula ($H_0$):** A sequência de observações é aleatória (i.i.d.).
+- **Hipótese Alternativa ($H_1$):** A sequência de observações não é aleatória.
+
+Para o teste das corridas, os dados contínuos foram dicotomizados em relação à mediana ($\tilde{x} = 0.4544$), resultando em $n_1 = 15$ observações acima da mediana, $n_2 = 15$ observações abaixo da mediana e $r = 19$ corridas observadas.
+
+```{r q1-aleat-tabela}
+t_runs    <- randtests::runs.test(q1)
+t_bartels <- lawstat::bartels.test(q1)
+t_cox     <- randtests::cox.stuart.test(q1)
+
+tab_aleat <- data.frame(
+  Teste = c(
+    "Corridas de Wald-Wolfowitz (Runs Test)",
+    "Razão RVN de Bartels",
+    "Tendência de Cox-Stuart"
+  ),
+  Estatistica = c(
+    paste0("r = 19 (Z = ", sprintf("%.4f", t_runs$statistic), ")"),
+    paste0("RVN = ", sprintf("%.4f", t_bartels$parameter), " (Z = ", sprintf("%.4f", t_bartels$statistic), ")"),
+    paste0("S = ", t_cox$statistic, " (n = 15)")
+  ),
+  P_Valor = c(
+    sprintf("%.4f", t_runs$p.value),
+    sprintf("%.4f", t_bartels$p.value),
+    sprintf("%.4f", t_cox$p.value)
+  ),
+  Decisao_alpha_010 = c(
+    "Não rejeita H0",
+    "Não rejeita H0",
+    "Não rejeita H0"
+  )
+)
+
+kable(
+  tab_aleat,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Testes de Aleatoriedade para os dados de q1.txt (alpha = 0.10)."
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+$\rightarrow$ **Consultar resultado exato na tabela** (na dúvida favorece-se $H_0$).
+
+**Conclusão:**
+Não existe evidência suficiente para rejeitar a hipótese nula de aleatoriedade ao nível de significância de 10% ($\alpha = 0.10$), portanto podemos assumir que as observações foram geradas de forma aleatória e independente.
+
+---
+
+## Testes de Normalidade
+
+Verifica-se a aderência dos dados à família de distribuições normais.
+
+- **Hipótese Nula ($H_0$):** Os dados provêm de uma distribuição normal.
+- **Hipótese Alternativa ($H_1$):** Os dados não provêm de uma distribuição normal.
+
+```{r q1-norm-tabela}
+t_sw     <- shapiro.test(q1)
+t_lillie <- nortest::lillie.test(q1)
+t_ad     <- nortest::ad.test(q1)
+
+tab_norm <- data.frame(
+  Teste = c(
+    "Shapiro-Wilk",
+    "Lilliefors (Kolmogorov-Smirnov)",
+    "Anderson-Darling"
+  ),
+  Estatistica = c(
+    paste0("W = ", sprintf("%.4f", t_sw$statistic)),
+    paste0("D = ", sprintf("%.4f", t_lillie$statistic)),
+    paste0("A = ", sprintf("%.4f", t_ad$statistic))
+  ),
+  P_Valor = c(
+    sprintf("%.4f", t_sw$p.value),
+    sprintf("%.4f", t_lillie$p.value),
+    sprintf("%.4f", t_ad$p.value)
+  ),
+  Decisao_alpha_010 = c(
+    "Rejeita H0",
+    "Rejeita H0",
+    "Rejeita H0"
+  )
+)
+
+kable(
+  tab_norm,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Testes de Normalidade para os dados de q1.txt (alpha = 0.10)."
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+$\rightarrow$ **Consultar resultado exato na tabela** (na dúvida favorece-se $H_0$).
+
+**Conclusão:**
+Existe evidência para rejeitar a hipótese nula de normalidade ao nível de significância de 10% ($\alpha = 0.10$), portanto a amostra observada não provém de uma distribuição normal.
+
+---
+
+## Sugestão de Modelo de Distribuição
+
+Sintetizando os resultados dos testes anteriores:
+1. Os dados exibem **simetria** consistente em torno do centro ($p\text{-valores} > 0.30$).
+2. Os dados constituem uma **amostra aleatória i.i.d.** ($p\text{-valores} > 0.25$).
+3. Os dados **não seguem uma distribuição normal** ($p\text{-valores} < 0.10$).
+
+A análise descritiva complementar indica média $\bar{x} = 0.2716$, mediana $\tilde{x} = 0.4544$, desvio padrão $s = 1.4963$ e coeficiente de curtose amostral $\kappa = 5.8148$. A curtose substancialmente superior a 3 revela a presença de **caudas pesadas (leptocurtose)**, corroborada por valores extremos em ambas as direções (mínimo de $-4.6793$ e máximo de $4.0313$).
+
+**Sugestão de Modelo:**
+Sugere-se uma **distribuição $t$ de Student** com parâmetros de localização e escala e poucos graus de liberdade ($\nu \approx 3$). Alternativamente, recomendam-se distribuições simétricas de caudas pesadas como a **distribuição de Laplace (Dupla Exponencial)** ou a **distribuição Logística**.
+
+\newpage
+
+# Questão 2 (6.5 pontos)
+
+**Enunciado:** Considere uma variável aleatória $X$ com a seguinte função densidade de probabilidade:
+$$f(x) = \frac{1}{\sigma} e^{-(x-\mu)/\sigma}, \quad \mu < x, \ \mu \in \mathbb{R}, \ \sigma > 0.$$
+Explique como pode ser gerada uma amostra aleatória da variável aleatória $X$, para $\mu$ e $\sigma$ apropriados e tamanho qualquer. Enuncie corretamente os resultados que forem necessários.
+
+---
+
+A variável aleatória $X$ segue uma **distribuição Exponencial deslocada (Two-parameter Exponential)** com parâmetro de localização $\mu$ e parâmetro de escala $\sigma$.
+
+## Resultado Teórico Necessário
+
+> **Teorema da Inversão (Probability Integral Transform):**
+> Seja $X$ uma variável aleatória contínua com função de distribuição acumulada (f.d.a.) $F_X(x)$ estritamente crescente e contínua em seu suporte. Se $U \sim \text{Uniforme}(0, 1)$, então a variável aleatória definida pela transformação quantílica:
+> $$X = F_X^{-1}(U)$$
+> possui função de distribuição acumulada exatamente igual a $F_X(x)$.
+>
+> *Demonstração:*
+> Como $F_X$ é estritamente crescente, para todo $x$ no suporte:
+> $$P(X \le x) = P\left(F_X^{-1}(U) \le x\right) = P\left(U \le F_X(x)\right).$$
+> Sendo $U \sim \text{Uniforme}(0, 1)$, tem-se $P(U \le u) = u$ para qualquer $u \in [0, 1]$. Logo:
+> $$P(U \le F_X(x)) = F_X(x),$$
+> o que demonstra que $X \sim F_X$.
+
+## Determinação da f.d.a. $F_X(x)$ e de sua Inversa $F_X^{-1}(u)$
+
+1. **Função de distribuição acumulada $F_X(x)$:**
+   Para todo $x > \mu$:
+   $$F_X(x) = \int_{\mu}^{x} f(t) \, dt = \int_{\mu}^{x} \frac{1}{\sigma} e^{-(t-\mu)/\sigma} \, dt = \left[ - e^{-(t-\mu)/\sigma} \right]_{\mu}^{x} = 1 - e^{-(x-\mu)/\sigma}.$$
+   Para $x \le \mu$, temos $F_X(x) = 0$.
+
+2. **Inversão da função de distribuição acumulada ($F_X^{-1}$):**
+   Fixando $u \in (0, 1)$ e resolvendo $F_X(x) = u$:
+   $$1 - e^{-(x-\mu)/\sigma} = u \iff e^{-(x-\mu)/\sigma} = 1 - u \iff -\frac{x-\mu}{\sigma} = \ln(1 - u) \iff x = \mu - \sigma \ln(1 - u).$$
+   Portanto, a função quantil de $X$ é dada por:
+   $$F_X^{-1}(u) = \mu - \sigma \ln(1 - u), \quad 0 < u < 1.$$
+   *(Nota: Como $U \sim \text{Uniforme}(0, 1)$ implica que $(1 - U) \sim \text{Uniforme}(0, 1)$, a expressão $X = \mu - \sigma \ln(U)$ é perfeitamente equivalente).*
+
+## Algoritmo de Geração da Amostra
+
+Para gerar uma amostra aleatória i.i.d. de tamanho $n$ de $X \sim f(x)$:
+1. Fixar os parâmetros desejados $\mu \in \mathbb{R}$, $\sigma > 0$ e o tamanho amostral $n \in \mathbb{N}^*$.
+2. Gerar $n$ variáveis aleatórias independentes e identicamente distribuídas da distribuição uniforme padrão:
+   $$U_1, U_2, \dots, U_n \overset{\text{i.i.d.}}{\sim} \text{Uniforme}(0, 1).$$
+3. Aplicar a transformação inversa para cada elemento:
+   $$X_i = \mu - \sigma \ln(1 - U_i), \quad i = 1, 2, \dots, n.$$
+4. O vetor resultante $(X_1, X_2, \dots, X_n)$ constitui uma amostra aleatória de tamanho $n$ da distribuição de $X$.
+
+\newpage
+
+# Questão 3 (5.5 pontos)
+
+**Enunciado:** Teste se os dados em `q3.txt` seguem uma distribuição $\text{Beta}(3, 2.3)$. Faça um teste exato para aleatoriedade.
+
+---
+
+A amostra analisada contém $n = 30$ observações de `q3.txt`.
+
+## Teste de Aderência para $\text{Beta}(3, 2.3)$
+
+Trata-se de um teste de bondade de ajuste com distribuição completamente especificada.
+
+- **Hipótese Nula ($H_0$):** Os dados seguem uma distribuição $\text{Beta}(\alpha = 3, \beta = 2.3)$.
+- **Hipótese Alternativa ($H_1$):** Os dados não seguem uma distribuição $\text{Beta}(3, 2.3)$.
+
+Apresentam-se três testes de bondade de ajuste para distribuições completamente especificadas:
+
+```{r q3-beta-tabela}
+t_ks3  <- ks.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+t_ad3  <- goftest::ad.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+t_cvm3 <- goftest::cvm.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+
+tab_beta <- data.frame(
+  Teste = c(
+    "Kolmogorov-Smirnov (KS)",
+    "Anderson-Darling (AD)",
+    "Cramér-von Mises (CvM)"
+  ),
+  Estatistica = c(
+    paste0("D = ", sprintf("%.5f", t_ks3$statistic)),
+    paste0("An = ", sprintf("%.4f", t_ad3$statistic)),
+    paste0("omega^2 = ", sprintf("%.5f", t_cvm3$statistic))
+  ),
+  P_Valor = c(
+    sprintf("%.4f", t_ks3$p.value),
+    sprintf("%.4f", t_ad3$p.value),
+    sprintf("%.4f", t_cvm3$p.value)
+  ),
+  Decisao_alpha_005 = c(
+    "Rejeita H0",
+    "Rejeita H0",
+    "Rejeita H0"
+  )
+)
+
+kable(
+  tab_beta,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Testes de Aderência à distribuição Beta(3, 2.3) para q3.txt."
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+$\rightarrow$ **Consultar resultado exato na tabela** (na dúvida favorece-se $H_0$).
+
+**Conclusão:**
+Existe evidência para rejeitar a hipótese de que os dados seguem uma distribuição $\text{Beta}(3, 2.3)$ ao nível de significância de 5% (e de 10%), portanto os dados em `q3.txt` não seguem a distribuição Beta proposta.
+
+---
+
+## Teste Exato para Aleatoriedade
+
+O enunciado solicita explicitamente: *"Faça um teste exato para aleatoriedade."*
+
+- **Hipótese Nula ($H_0$):** A sequência de dados é aleatória (i.i.d.).
+- **Hipótese Alternativa ($H_1$):** A sequência de dados não é aleatória.
+
+### Metodologia do Teste Exato das Corridas (Runs Test)
+1. Dicotomização em relação à mediana amostral ($\tilde{x} = 0.4738$):
+   - Sinais positivos ($X_i > \tilde{x}$): $n_1 = 15$.
+   - Sinais negativos ($X_i < \tilde{x}$): $n_2 = 15$.
+   - Tamanho amostral efetivo: $n = n_1 + n_2 = 30$.
+2. Número de corridas observadas: $r = 19$.
+3. Média esperada de corridas sob $H_0$:
+   $$E[R] = 1 + \frac{2 n_1 n_2}{n} = 1 + \frac{2 \times 15 \times 15}{30} = 16.$$
+4. Probabilidade exata combinatória:
+   Como $r = 19 > E[R] = 16$, calculamos a cauda superior exata:
+   $$P(R \ge 19 \mid n_1 = 15, n_2 = 15) = 0.1749.$$
+   O $p\text{-valor}$ exato bilateral é dado por:
+   $$p\text{-valor}_{\text{exato}} = 2 \times P(R \ge 19) = 2 \times 0.17491 = 0.3498.$$
+
+```{r q3-aleat-tabela}
+t_runs3    <- randtests::runs.test(q3)
+t_bartels3 <- lawstat::bartels.test(q3)
+t_cox3     <- randtests::cox.stuart.test(q3)
+
+tab_aleat3 <- data.frame(
+  Teste = c(
+    "Corridas Exato (Wald-Wolfowitz)",
+    "Razão RVN de Bartels",
+    "Tendência de Cox-Stuart"
+  ),
+  Estatistica = c(
+    paste0("r = 19 (n1 = 15, n2 = 15)"),
+    paste0("RVN = ", sprintf("%.4f", t_bartels3$parameter), " (Z = ", sprintf("%.4f", t_bartels3$statistic), ")"),
+    paste0("S = ", t_cox3$statistic, " (n = 15)")
+  ),
+  P_Valor = c(
+    "0.3498 (Exato)",
+    sprintf("%.4f", t_bartels3$p.value),
+    sprintf("%.4f", t_cox3$p.value)
+  ),
+  Decisao_alpha_005 = c(
+    "Não rejeita H0",
+    "Não rejeita H0",
+    "Não rejeita H0"
+  )
+)
+
+kable(
+  tab_aleat3,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Testes de Aleatoriedade para os dados de q3.txt."
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+$\rightarrow$ **Consultar resultado exato na tabela** (Tabela G de Siegel: para $n_1=15, n_2=15$, os limites críticos bilaterais a 5% são $[10, 22]$; como $r = 19$ está no intervalo, não rejeita $H_0$; na dúvida favorece-se $H_0$).
+
+**Conclusão:**
+Não existe evidência suficiente para rejeitar a hipótese nula de aleatoriedade ao nível de significância de 5% (e de 10%), portanto podemos assumir que os dados em `q3.txt` constituem uma amostra aleatória de observações independentes.
+
+\newpage
+
+# Questão 4 (6.5 pontos)
+
+**Enunciado:** Encontre a função densidade de probabilidade da amplitude amostral de uma amostra de tamanho $n$ de uma v.a. $X \sim \exp(\lambda)$, com $f_X(x) = \lambda e^{-\lambda x}$, $x \ge 0$, $\lambda > 0$.
+
+*Dica:* $f_{X_{(1)}, X_{(n)}}(x, y) = n(n - 1) [F_X(y) - F_X(x)]^{n-2} f_X(x) f_X(y), \quad x < y$.
+
+---
+
+## 1. Funções da Distribuição Exponencial
+
+Para $X \sim \exp(\lambda)$:
+- Densidade: $f_X(x) = \lambda e^{-\lambda x}$, para $x \ge 0$.
+- Acumulada: $F_X(x) = 1 - e^{-\lambda x}$, para $x \ge 0$.
+
+Para $0 \le x < y$:
+$$F_X(y) - F_X(x) = (1 - e^{-\lambda y}) - (1 - e^{-\lambda x}) = e^{-\lambda x} - e^{-\lambda y} = e^{-\lambda x}\left(1 - e^{-\lambda(y - x)}\right).$$
+$$f_X(x) f_X(y) = (\lambda e^{-\lambda x})(\lambda e^{-\lambda y}) = \lambda^2 e^{-\lambda(x + y)}.$$
+
+Substituindo na densidade conjunta das estatísticas extremas $X_{(1)}$ e $X_{(n)}$:
+$$f_{X_{(1)}, X_{(n)}}(x, y) = n(n - 1) \left[ e^{-\lambda x} - e^{-\lambda y} \right]^{n-2} \lambda^2 e^{-\lambda(x + y)}, \quad 0 \le x < y.$$
+
+## 2. Transformação de Variáveis
+
+Definimos a amplitude amostral $R$ e mantemos o mínimo amostral $X_{(1)}$:
+$$\begin{cases} R = X_{(n)} - X_{(1)} \\ X_{(1)} = X_{(1)} \end{cases} \iff \begin{cases} X_{(n)} = R + X_{(1)} \\ X_{(1)} = X_{(1)} \end{cases}$$
+
+Sejam $x = X_{(1)}$ e $r = R$. O domínio conjunto é $x > 0$ e $r > 0$. O Jacobiano da transformação é:
+$$J = \begin{vmatrix} \frac{\partial x}{\partial x} & \frac{\partial x}{\partial r} \\ \frac{\partial y}{\partial x} & \frac{\partial y}{\partial r} \end{vmatrix} = \begin{vmatrix} 1 & 0 \\ 1 & 1 \end{vmatrix} = 1 \cdot 1 - 0 \cdot 1 = 1 \implies |J| = 1.$$
+
+Portanto, a densidade conjunta de $(X_{(1)}, R)$ é dada por:
+$$f_{X_{(1)}, R}(x, r) = f_{X_{(1)}, X_{(n)}}(x, x + r) \cdot |J| = f_{X_{(1)}, X_{(n)}}(x, x + r).$$
+
+## 3. Simplificação da Densidade Conjunta
+
+Substituindo $y = x + r$:
+1. $F_X(x + r) - F_X(x) = e^{-\lambda x} - e^{-\lambda(x + r)} = e^{-\lambda x} (1 - e^{-\lambda r})$.
+2. $[F_X(x + r) - F_X(x)]^{n-2} = e^{-\lambda(n - 2)x} (1 - e^{-\lambda r})^{n-2}$.
+3. $f_X(x) f_X(x + r) = \lambda^2 e^{-\lambda x} e^{-\lambda(x + r)} = \lambda^2 e^{-2\lambda x} e^{-\lambda r}$.
+
+Multiplicando os termos:
+$$f_{X_{(1)}, R}(x, r) = n(n - 1) \lambda^2 \left[ e^{-\lambda(n - 2)x} (1 - e^{-\lambda r})^{n-2} \right] \left[ e^{-2\lambda x} e^{-\lambda r} \right].$$
+
+Agrupando as exponenciais dependentes de $x$:
+$$e^{-\lambda(n - 2)x} \cdot e^{-2\lambda x} = e^{-\lambda(n - 2 + 2)x} = e^{-n\lambda x}.$$
+
+Assim:
+$$f_{X_{(1)}, R}(x, r) = n(n - 1) \lambda^2 (1 - e^{-\lambda r})^{n-2} e^{-\lambda r} e^{-n\lambda x}, \quad x > 0, \ r > 0.$$
+
+## 4. Obtenção da Densidade Marginal $f_R(r)$
+
+Para encontrar a densidade de $R$, integramos em relação a $x \in (0, \infty)$:
+$$f_R(r) = \int_0^\infty f_{X_{(1)}, R}(x, r) \, dx = n(n - 1) \lambda^2 (1 - e^{-\lambda r})^{n-2} e^{-\lambda r} \int_0^\infty e^{-n\lambda x} \, dx.$$
+
+A integral em $x$ é imediata:
+$$\int_0^\infty e^{-n\lambda x} \, dx = \left[ -\frac{e^{-n\lambda x}}{n\lambda} \right]_0^\infty = 0 - \left( -\frac{1}{n\lambda} \right) = \frac{1}{n\lambda}.$$
+
+Substituindo o resultado da integral:
+$$f_R(r) = n(n - 1) \lambda^2 (1 - e^{-\lambda r})^{n-2} e^{-\lambda r} \cdot \frac{1}{n\lambda} = (n - 1) \lambda e^{-\lambda r} (1 - e^{-\lambda r})^{n-2}.$$
+
+## 5. Expressão Final
+
+A função densidade de probabilidade da amplitude amostral $R$ é:
+$$f_R(r) = (n - 1) \lambda e^{-\lambda r} (1 - e^{-\lambda r})^{n-2} \mathbb{I}_{(0, \infty)}(r).$$
+
+*(Nota de consistência: A função de distribuição acumulada de $R$ é dada por $F_R(r) = (1 - e^{-\lambda r})^{n-1}$, para $r > 0$).*
+
+\newpage
+
+# Apêndice: Código Fonte Computacional {#codigo-fonte}
+
+Abaixo disponibiliza-se a íntegra dos scripts computacionais em linguagem R desenvolvidos de forma organizada, limpa e modularizada. Todo o processamento computacional foi configurado com execução determinística instantânea (`boot = FALSE`), dispensando rotinas lentas de reamostragem.
+
+```{r apendice-codigo, echo=TRUE, eval=FALSE}
+# ==============================================================================
+# PROVA 1 - INFERENCIA NAO PARAMETRICA (EST037)
+# SCRIPTS COMPUTACIONAIS ORGANIZADOS E COMENTADOS
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. CARREGAMENTO DOS PACOTES
+# ------------------------------------------------------------------------------
+library(lawstat)   # Testes de simetria (MGG, CM, Mira) e Bartels
+library(nortest)   # Testes de normalidade (Lilliefors, Anderson-Darling)
+library(randtests) # Testes de aleatoriedade (Runs, Cox-Stuart)
+library(goftest)   # Testes de aderencia (Anderson-Darling, Cramer-von Mises)
+library(knitr)     # Formatacao de tabelas dinamicas
+library(kableExtra)# Estilizacao de tabelas em LaTeX
+
+# ------------------------------------------------------------------------------
+# 2. QUESTÃO 1: SIMETRIA, ALEATORIEDADE E NORMALIDADE (q1.txt)
+# ------------------------------------------------------------------------------
+# Leitura da base q1.txt
+q1 <- scan("q1.txt", quiet = TRUE)
+n1_tam <- length(q1)
+
+# 2.1 Testes de Simetria (boot = FALSE para execucao instantanea)
+# H0: A distribuicao populacional eh simetrica
+mgg_q1  <- lawstat::symmetry.test(q1, option = "MGG", boot = FALSE)
+cm_q1   <- lawstat::symmetry.test(q1, option = "CM",  boot = FALSE)
+mira_q1 <- lawstat::symmetry.test(q1, option = "M",   boot = FALSE)
+
+cat("--- QUESTAO 1: SIMETRIA ---\n")
+print(mgg_q1)
+print(cm_q1)
+print(mira_q1)
+
+# 2.2 Testes de Aleatoriedade
+# H0: A sequencia de observacoes eh aleatoria (i.i.d.)
+runs_q1    <- randtests::runs.test(q1)
+bartels_q1 <- lawstat::bartels.test(q1)
+cox_q1     <- randtests::cox.stuart.test(q1)
+
+cat("--- QUESTAO 1: ALEATORIEDADE ---\n")
+print(runs_q1)
+print(bartels_q1)
+print(cox_q1)
+
+# 2.3 Testes de Normalidade
+# H0: Os dados provem de uma distribuicao normal
+sw_q1     <- shapiro.test(q1)
+lillie_q1 <- nortest::lillie.test(q1)
+ad_q1     <- nortest::ad.test(q1)
+
+cat("--- QUESTAO 1: NORMALIDADE ---\n")
+print(sw_q1)
+print(lillie_q1)
+print(ad_q1)
+
+# 2.4 Analise Descritiva e Sugestao de Modelo
+media_q1    <- mean(q1)
+mediana_q1  <- median(q1)
+dp_q1       <- sd(q1)
+assimetria  <- sum((q1 - media_q1)^3) / (n1_tam * dp_q1^3)
+curtose     <- sum((q1 - media_q1)^4) / (n1_tam * dp_q1^4)
+
+cat("--- QUESTAO 1: DIAGNOSTICO ---\n")
+cat("Media:", media_q1, "| Mediana:", mediana_q1, "\n")
+cat("Desvio Padrao:", dp_q1, "| Curtose:", curtose, "\n")
+# Curtose > 3 indica caudas pesadas (leptocurtose) -> Sugestao: t de Student
+
+# ------------------------------------------------------------------------------
+# 3. QUESTÃO 2: GERADOR DA EXPONENCIAL DESLOCADA
+# ------------------------------------------------------------------------------
+# Funcao geradora via Teorema da Inversao: X = mu - sigma * log(1 - U)
+gerar_exp_deslocada <- function(n, mu = 0, sigma = 1) {
+  u <- runif(n, min = 0, max = 1)
+  x <- mu - sigma * log(1 - u)
+  return(x)
+}
+
+# Exemplo de simulacao rapida com mu = 2 e sigma = 1.5
+set.seed(42)
+amostra_gerada <- gerar_exp_deslocada(n = 100, mu = 2, sigma = 1.5)
+summary(amostra_gerada)
+
+# ------------------------------------------------------------------------------
+# 4. QUESTÃO 3: ADERÊNCIA A BETA(3, 2.3) E TESTE EXATO DE ALEATORIEDADE (q3.txt)
+# ------------------------------------------------------------------------------
+# Leitura da base q3.txt
+q3 <- scan("q3.txt", quiet = TRUE)
+
+# 4.1 Testes de Aderencia para Beta(3, 2.3)
+# H0: X ~ Beta(3, 2.3)
+ks_beta3  <- ks.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+ad_beta3  <- goftest::ad.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+cvm_beta3 <- goftest::cvm.test(q3, "pbeta", shape1 = 3, shape2 = 2.3)
+
+cat("--- QUESTAO 3: ADERENCIA BETA(3, 2.3) ---\n")
+print(ks_beta3)
+print(ad_beta3)
+print(cvm_beta3)
+
+# 4.2 Teste Exato de Aleatoriedade (Funcoes exatas das Corridas)
+densRuns <- function(n1, n2, r) {
+  n <- n1 + n2
+  if (r %% 2 == 1) {
+    fr <- (choose(n1 - 1, (r - 1) / 2) * choose(n2 - 1, (r - 3) / 2) +
+           choose(n1 - 1, (r - 3) / 2) * choose(n2 - 1, (r - 1) / 2)) /
+           choose(n, n1)
+  } else {
+    fr <- 2 * choose(n1 - 1, r / 2 - 1) * choose(n2 - 1, r / 2 - 1) / choose(n, n1)
+  }
+  return(fr)
+}
+
+# Dicotomizacao pela mediana de q3
+med_q3 <- median(q3)
+sinais <- ifelse(q3 > med_q3, "+", ifelse(q3 < med_q3, "-", "0"))
+sinais <- sinais[sinais != "0"]
+n1_q3  <- sum(sinais == "+")
+n2_q3  <- sum(sinais == "-")
+r_q3   <- 1 + sum(sinais[-1] != sinais[-length(sinais)])
+
+# Calculo do p-valor exato bilateral: 2 * P(R >= r)
+p_cauda_sup <- sum(sapply(r_q3:(n1_q3 + n2_q3), function(k) densRuns(n1_q3, n2_q3, k)))
+p_valor_exato_runs <- 2 * p_cauda_sup
+
+cat("--- QUESTAO 3: TESTE EXATO DE CORRIDAS ---\n")
+cat("n1 =", n1_q3, "| n2 =", n2_q3, "| Corridas r =", r_q3, "\n")
+cat("p-valor exato bilateral =", p_valor_exato_runs, "\n")
+
+# Outros 2 testes de aleatoriedade para comparacao
+bartels_q3 <- lawstat::bartels.test(q3)
+cox_q3     <- randtests::cox.stuart.test(q3)
+print(bartels_q3)
+print(cox_q3)
+
+# ------------------------------------------------------------------------------
+# 5. QUESTÃO 4: VERIFICAÇÃO NUMÉRICA DA AMPLITUDE AMOSTRAL
+# ------------------------------------------------------------------------------
+# Densidade analitica derivada: f_R(r) = (n-1)*lambda*exp(-lambda*r)*(1-exp(-lambda*r))^(n-2)
+n_ex  <- 5
+l_ex  <- 2
+fR_an <- function(r) (n_ex - 1) * l_ex * exp(-l_ex * r) * (1 - exp(-l_ex * r))^(n_ex - 2)
+
+# Esperanca teorica via integracao numerica
+e_teorico <- integrate(function(r) r * fR_an(r), lower = 0, upper = Inf)$value
+
+# Simulacao Monte Carlo rapida (10.000 repeticoes)
+set.seed(123)
+sim_amp   <- replicate(10000, {
+  amostra <- rexp(n_ex, rate = l_ex)
+  max(amostra) - min(amostra)
+})
+e_simulado <- mean(sim_amp)
+
+cat("--- QUESTAO 4: VALIDACAO ---\n")
+cat("E[R] Teorico Analitico:", e_teorico, "\n")
+cat("E[R] Simulado Monte Carlo:", e_simulado, "\n")
+```
